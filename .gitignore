@@ -34,5 +34,8 @@ nosetests.xml
 .project
 .pydevproject
 
+# Vim temp files
+*.swp
+
 # Project related
 virtualenv/
