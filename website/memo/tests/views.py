@@ -11,3 +11,18 @@ class HomeTest(TestCase):
 
         # check status code
         self.assertEqual(response.status_code, 200)
+
+
+class AccountTest(TestCase):
+    def test_register_post(self):
+        # need to provide below fields:
+        # name -- as nickname
+        # email -- email address
+        # passowrd --  login password
+        resp = self.client.post(reverse('memo.views.register'),
+                                {'name': 'dummy',
+                                 'email': 'test@example.com',
+                                 'password': 'dummy'})
+
+        # if register success, we should redirect
+        self.assertEqual(resp.status_code, 302)
