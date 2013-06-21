@@ -7,5 +7,5 @@ import memo.views
 
 urlpatterns = patterns(
     '',
-    url(r'^$', memo.views.HomeView.as_view(), name='home'),
+    url(r'^$', memo.views.home),
 )
