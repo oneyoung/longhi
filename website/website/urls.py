@@ -8,4 +8,5 @@ import memo.views
 urlpatterns = patterns(
     '',
     url(r'^$', memo.views.home),
+    url(r'account/register/$', memo.views.register),
 )

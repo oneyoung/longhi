@@ -1,5 +1,7 @@
 # _*_ coding: utf8 _*_
 from django.views.generic.base import TemplateView
+from django.views.generic.edit import CreateView
+from models import Account
 
 
 # shortcut to get a short name from django generic views
@@ -15,3 +17,9 @@ def _as_view(name):
 @_as_view('home')
 class HomeView(TemplateView):
     template_name = 'home.html'
+
+
+@_as_view('register')
+class RegisterView(CreateView):
+    template_name = 'register.html'
+    model = Account
