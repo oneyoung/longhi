@@ -15,8 +15,8 @@ class HomeTest(TestCase):
 
 class AccountTest(TestCase):
     def setUp(self):
-        self.account = {'name': 'dummy',
-                        'email': 'test@example.com',
+        self.account = {'nickname': 'dummy',
+                        'username': 'test@example.com',
                         'password': 'dummy'}
 
     def _register_post(self, account):
@@ -24,22 +24,16 @@ class AccountTest(TestCase):
         # name -- as nickname
         # email -- email address
         # passowrd --  login password
-        return self.client.post(reverse('memo.views.register'),
-                                {'name': account['name'],
-                                 'email': account['email'],
-                                 'password': account['password']})
-
-    def _login_post(self, account):
-        # two filed required: email & password
-        return self.client.post(reverse('memo.views.login'),
-                                {'email': account['email'],
-                                 'password': account['password']})
+        return self.client.post(reverse('memo.views.register'), account)
 
     def test_register(self):
-        resp = self._register_post(self.account)
+        account = self.account
+        resp = self._register_post(account)
         # if register success, we should redirect
         self.assertEqual(resp.status_code, 200)
 
         # the same account register should fail
 
         # after register, we can login
+        ret = self.client.login(username=account['username'], password=account['password'])
+        self.assertTrue(ret)
