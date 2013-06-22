@@ -33,6 +33,8 @@ class AccountTest(TestCase):
         self.assertEqual(resp.status_code, 200)
 
         # the same account register should fail
+        resp = self._register_post(account)
+        self.assertNotEqual(resp.status_code, 200)
 
         # after register, we can login
         ret = self.client.login(username=account['username'], password=account['password'])

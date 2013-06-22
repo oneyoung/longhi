@@ -29,6 +29,9 @@ class RegisterView(TemplateView):
         if form.is_valid():
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
-            user = User.objects.create_user(username=username, password=password)
-            user.save()
-            return http.HttpResponse('OK')
+            if not User.objects.filter(username=username).exists():
+                user = User.objects.create_user(username=username, password=password)
+                user.save()
+                return http.HttpResponse('OK')
+            else:
+                return http.HttpResponseNotAllowed('User has already exists')
