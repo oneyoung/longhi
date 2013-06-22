@@ -1,6 +1,5 @@
-from django.db import models
-from django.contrib.auth.models import User
+# _*_ coding: utf8 _*_
+from django.contrib import auth
 
 
-class Account(User):
-    pass
+User = auth.models.User

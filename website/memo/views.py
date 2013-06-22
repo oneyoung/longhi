@@ -1,7 +1,8 @@
 # _*_ coding: utf8 _*_
 from django.views.generic.base import TemplateView
-from django.views.generic.edit import CreateView
-from models import Account
+from django import http
+from models import User
+from forms import RegisterForm
 
 
 # shortcut to get a short name from django generic views
@@ -20,6 +21,14 @@ class HomeView(TemplateView):
 
 
 @_as_view('register')
-class RegisterView(CreateView):
+class RegisterView(TemplateView):
     template_name = 'register.html'
-    model = Account
+
+    def post(self, request, *args, **kwargs):
+        form = RegisterForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            user = User.objects.create_user(username=username, password=password)
+            user.save()
+            return http.HttpResponse('OK')

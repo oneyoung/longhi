@@ -37,3 +37,7 @@ class AccountTest(TestCase):
         # after register, we can login
         ret = self.client.login(username=account['username'], password=account['password'])
         self.assertTrue(ret)
+
+        # wrong password should login failed
+        ret = self.client.login(username=account['username'], password='wrongpwd')
+        self.assertFalse(ret)
