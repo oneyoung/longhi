@@ -22,7 +22,7 @@ class HomeView(TemplateView):
 
 @_as_view('register')
 class RegisterView(TemplateView):
-    template_name = 'register.html'
+    template_name = 'user/register.html'
 
     def post(self, request, *args, **kwargs):
         form = RegisterForm(request.POST)
