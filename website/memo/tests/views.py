@@ -27,6 +27,10 @@ class AccountTest(TestCase):
         return self.client.post(reverse('memo.views.register'), account)
 
     def test_register(self):
+        # get register page first
+        resp = self.client.get(reverse('memo.views.register'))
+        self.assertEqual(resp.status_code, 200)
+
         account = self.account
         resp = self._register_post(account)
         # if register success, we should redirect
