@@ -34,11 +34,11 @@ class AccountTest(TestCase):
         account = self.account
         resp = self._register_post(account)
         # if register success, we should redirect
-        self.assertEqual(resp.status_code, 200)
+        self.assertIn('been created', resp.content)
 
-        # the same account register should fail
+        # the same account register should tell you it was taken
         resp = self._register_post(account)
-        self.assertNotEqual(resp.status_code, 200)
+        self.assertIn('been taken', resp.content)
 
         # after register, we can login
         ret = self.client.login(username=account['username'], password=account['password'])

@@ -1,6 +1,5 @@
 # _*_ coding: utf8 _*_
 from django.views.generic.base import TemplateView
-from django import http
 from models import User
 from forms import RegisterForm
 
@@ -24,6 +23,11 @@ class HomeView(TemplateView):
 class RegisterView(TemplateView):
     template_name = 'user/register.html'
 
+    def get_context_data(self, **kwargs):
+        context = super(RegisterView, self).get_context_data(**kwargs)
+        context['form'] = RegisterForm
+        return context
+
     def post(self, request, *args, **kwargs):
         form = RegisterForm(request.POST)
         if form.is_valid():
@@ -32,6 +36,8 @@ class RegisterView(TemplateView):
             if not User.objects.filter(username=username).exists():
                 user = User.objects.create_user(username=username, password=password)
                 user.save()
-                return http.HttpResponse('OK')
+                return self.render_to_response({'status': 'success'})
             else:
-                return http.HttpResponseNotAllowed('User has already exists')
+                return self.render_to_response({'status': 'fail', 'form': form})
+        else:
+            return self.render_to_response({'form': form})
