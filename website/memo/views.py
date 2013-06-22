@@ -41,3 +41,9 @@ class RegisterView(TemplateView):
                 return self.render_to_response({'status': 'fail', 'form': form})
         else:
             return self.render_to_response({'form': form})
+
+
+def login(request):
+    from django.contrib.auth.views import login as login_view
+    return login_view(request,
+                      template_name='user/login.html')

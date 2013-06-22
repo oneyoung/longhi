@@ -9,4 +9,5 @@ urlpatterns = patterns(
     '',
     url(r'^$', memo.views.home),
     url(r'user/register/$', memo.views.register),
+    url(r'user/login/$', memo.views.login),
 )

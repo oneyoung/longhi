@@ -4,7 +4,7 @@
 {% if status == "success" %}
 <p>WoW!</p>
 <p>Your account have been created.</p>
-<p>Press <a href="">here</a> to login</p>
+<p>Press <a href="{% url 'memo.views.login' %}">here</a> to login</p>
 {% else %}
 <form method="post" action="{% url 'memo.views.register' %}">
   {% csrf_token %}
