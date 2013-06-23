@@ -3,7 +3,7 @@
 {% block body %}
 {% if status == "success" %}
 <p>WoW!</p>
-<p>Your account have been created.</p>
+<p>Your account has been created.</p>
 <p>Press <a href="{% url 'memo.views.login' %}">here</a> to login</p>
 {% else %}
 <form method="post" action="{% url 'memo.views.register' %}">
