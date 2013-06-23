@@ -19,6 +19,9 @@ class AccountTest(TestCase):
                         'username': 'test@example.com',
                         'password': 'dummy'}
 
+        # add this account to db
+        self._register_post(self.account)
+
     def _register_post(self, account):
         # need to provide below fields:
         # name -- as nickname
@@ -31,7 +34,8 @@ class AccountTest(TestCase):
         resp = self.client.get(reverse('memo.views.register'))
         self.assertEqual(resp.status_code, 200)
 
-        account = self.account
+        account = {'username': 'testtest@test.com',
+                   'password': 'testit'}
         resp = self._register_post(account)
         # if register success, we should redirect
         self.assertIn('been created', resp.content)
@@ -47,3 +51,23 @@ class AccountTest(TestCase):
         # wrong password should login failed
         ret = self.client.login(username=account['username'], password='wrongpwd')
         self.assertFalse(ret)
+
+    def test_logout(self):
+        account = self.account
+        client = self.client
+        client.login(username=account['username'], password=account['password'])
+        auth_key = '_auth_user_id'
+        self.assertIn(auth_key, client.session.keys())
+
+        # issue a GET request to logout
+        resp = client.get(reverse('memo.views.logout'))
+        # after logout, should redirect to home page
+        self.assertRedirects(resp, reverse('memo.views.home'))
+        # check if we really logout, _auth_user_id should not in session
+        self.assertNotIn(auth_key, client.session.keys())
+
+        # POST request should the same result
+        client.login(username=account['username'], password=account['password'])
+        resp = client.post(reverse('memo.views.logout'))
+        self.assertRedirects(resp, reverse('memo.views.home'))
+        self.assertNotIn(auth_key, client.session.keys())

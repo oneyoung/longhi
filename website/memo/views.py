@@ -1,5 +1,7 @@
 # _*_ coding: utf8 _*_
 from django.views.generic.base import TemplateView
+from django.shortcuts import redirect
+from django.core.urlresolvers import reverse
 from models import User
 from forms import RegisterForm
 
@@ -47,3 +49,10 @@ def login(request):
     from django.contrib.auth.views import login as login_view
     return login_view(request,
                       template_name='user/login.html')
+
+
+def logout(request):
+    from django.contrib.auth import logout as dj_logout
+    dj_logout(request)
+    # redirect to the home page
+    return redirect(reverse('memo.views.home'))
