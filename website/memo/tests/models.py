@@ -1,5 +1,6 @@
 from memo.models import User, Entry, Statics, Setting
 from django.test import TestCase
+from django.core import exceptions
 
 
 class UserTest(TestCase):
@@ -12,11 +13,20 @@ class UserTest(TestCase):
         # can get the new user
         user = User.objects.get(username=user)
         # can access Statics
+        statics_pk = user.statics.pk
         self.assertIsInstance(user.statics, Statics)
         # can access Setting
+        setting_pk = user.setting.pk
         self.assertIsInstance(user.setting, Setting)
-        # can access Entry
-        user.entry_set.objects.all()
+        # TODO: can access Entry set
+        #user.entry_set.objects.all()
+
+        # after user delete, these should all gone
+        user.delete()
+        with self.assertRaises(exceptions.ObjectDoesNotExist):
+            Statics.objects.get(pk=statics_pk)
+        with self.assertRaises(exceptions.ObjectDoesNotExist):
+            Setting.objects.get(pk=setting_pk)
 
 
 class EntryTest(TestCase):
