@@ -1,3 +1,4 @@
+from datetime import date
 from memo.models import User, Entry, Statics, Setting
 from django.test import TestCase
 from django.core import exceptions
@@ -19,7 +20,7 @@ class UserTest(TestCase):
         setting_pk = user.setting.pk
         self.assertIsInstance(user.setting, Setting)
         # TODO: can access Entry set
-        #user.entry_set.objects.all()
+        type(user.entry_set)
 
         # after user delete, these should all gone
         user.delete()
@@ -31,9 +32,18 @@ class UserTest(TestCase):
 
 class EntryTest(TestCase):
     def test_save_and_read(self):
+        user = 'entrytest@test.com'
+        pswd = 'usertest'
+        user = User.objects.create_user(username=user, password=pswd)
+        user.save()
+
         # save, should not cause any exception
+        entry = Entry()
+        entry.date = date.today()
+        entry.text = 'bababa'
+        entry.user = user
+        entry.save()
 
         # markdown test, after save, html should translated by markdown
 
         # after save, text should be the same
-        pass

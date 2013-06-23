@@ -6,12 +6,33 @@ from django.db import models
 User = auth.models.User
 
 
+# a wrapper to avoid explict user data expose to db admin
+def prop_wrap(prop):
+    # TODO: implement decode/encode method
+    def decode(value):
+        return value
+
+    def encode(value):
+        return value
+
+    def prop_get(self):
+        return encode(getattr(self, prop))
+
+    def prop_set(self, value):
+        setattr(self, prop, encode(value))
+
+    return property(prop_get, prop_set)
+
+
 class Entry(models.Model):
+    user = models.ForeignKey(User)
     date = models.DateField()
     star = models.BooleanField(default=False)
-    text = models.TextField()
-    html = models.TextField()
-    user = models.ForeignKey(User)
+    _text = models.TextField()
+    _html = models.TextField()
+
+    text = prop_wrap('_text')
+    html = prop_wrap('_html')
 
 
 class Statics(models.Model):
