@@ -1,10 +1,18 @@
 import os.path
-from datetime import date
+from datetime import date, timedelta
 from memo.models import User, Entry, Statics, Setting
 from django.test import TestCase
 from django.core import exceptions
 
 FILES_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'files')
+
+
+def create_user():
+    user = 'test@test.com'
+    pswd = 'usertest'
+    user = User.objects.create_user(username=user, password=pswd)
+    user.save()
+    return user
 
 
 class UserTest(TestCase):
@@ -34,12 +42,14 @@ class UserTest(TestCase):
 
 
 class EntryTest(TestCase):
+    def setUp(self):
+        self.user = create_user()
+
+    def tearDown(self):
+        self.user.delete()
+
     def test_save_and_read(self):
-        # preconfig for our test
-        user = 'entrytest@test.com'
-        pswd = 'usertest'
-        user = User.objects.create_user(username=user, password=pswd)
-        user.save()
+        user = self.user
 
         # load our markdown test sample from files
         import codecs
@@ -65,3 +75,50 @@ class EntryTest(TestCase):
         self.assertEquals(entry.html, html)
         # after save, text should be the same
         self.assertEquals(entry.text, text)
+
+
+class StaticsTest(TestCase):
+    def setUp(self):
+        self.user = create_user()
+
+    def tearDown(self):
+        self.user.delete()
+
+    def test_count_store(self):
+        user = self.user
+
+        def statics_equal(entrys, streak, record):
+            statics = self.user.statics  # get a fresh data
+            self.assertEqual(entrys, statics.entrys)
+            self.assertEqual(streak, statics.streak)
+            self.assertEqual(record, statics.record)
+
+        # for a new user, all count should be zero
+        statics_equal(0, 0, 0)
+
+        # let's create some entrys in a fews dayo
+        def create_entry(entry_date):
+            entry = Entry()
+            entry.date = entry_date
+            entry.text = 'text'
+            entry.user = user
+            entry.save()
+            return entry
+
+        step = user.setting.interval  # get user set notify interval
+        start_date = date.today()
+        for i in range(4):  # create 4 entry
+            start_date += timedelta(step)
+            create_entry(start_date)
+        statics_equal(4, 4, 4)
+
+        # let's skip a time, streak is clear
+        start_date += timedelta(step * 2)
+        create_entry(start_date)
+        statics_equal(5, 0, 4)
+
+        # why not create a new record
+        for i in range(10):
+            start_date += timedelta(step)
+            create_entry(start_date)
+        statics_equal(15, 10, 10)
