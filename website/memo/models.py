@@ -37,14 +37,15 @@ class Entry(models.Model):
 
 class Statics(models.Model):
     user = models.OneToOneField(User)
-    words = models.IntegerField(default=0)  # num of words
-    stack = models.IntegerField(default=0)  # keeping writing times
     entrys = models.IntegerField(default=0)  # num of entrys
+    streak = models.IntegerField(default=0)  # keeping writing times
     record = models.IntegerField(default=0)  # highest keeping record
+    last_update = models.DateField(null=True, blank=True)
 
 
 class Setting(models.Model):
     user = models.OneToOneField(User)
+    interval = models.IntegerField(default=1)
 
 
 # signals here
@@ -67,3 +68,25 @@ def entry_save_hook(sender, instance, **kwargs):
     md = markdown.Markdown(safe_mode='escape',
                            tab_length=4)
     instance.html = md.convert(instance.text)
+
+
+@receiver(post_save, sender=Entry)
+def entry_created_hook(sender, instance, created, **kwargs):
+    entry = instance
+    user = entry.user
+    if created and user:
+        statics = user.statics
+        statics.entrys = Entry.objects.filter(user=user).count()
+        if statics.last_update:
+            from datetime import timedelta
+            delta = entry.date - statics.last_update
+            if delta <= timedelta(user.setting.interval):
+                statics.streak += 1
+            else:
+                statics.streak = 0
+        else:  # first entry for the user
+            statics.streak = 1
+        if statics.record < statics.streak:
+            statics.record = statics.streak
+        statics.last_update = entry.date
+        statics.save()
