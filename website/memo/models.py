@@ -48,7 +48,7 @@ class Setting(models.Model):
 
 
 # signals here
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 
 
@@ -58,3 +58,12 @@ def user_created_hook(sender, instance, created, **kwargs):
     if created:
         Statics.objects.create(user=instance)
         Setting.objects.create(user=instance)
+
+
+@receiver(pre_save, sender=Entry)
+def entry_save_hook(sender, instance, **kwargs):
+    "auto convert markdown to html when saving"
+    import markdown
+    md = markdown.Markdown(safe_mode='escape',
+                           tab_length=4)
+    instance.html = md.convert(instance.text)
