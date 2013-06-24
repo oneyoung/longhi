@@ -1,12 +1,4 @@
 <h1>Markdown: Basics</h1>
-<ul id="ProjectSubmenu">
-    <li><a href="/projects/markdown/" title="Markdown Project Page">Main</a></li>
-    <li><a class="selected" title="Markdown Basics">Basics</a></li>
-    <li><a href="/projects/markdown/syntax" title="Markdown Syntax Documentation">Syntax</a></li>
-    <li><a href="/projects/markdown/license" title="Pricing and License Information">License</a></li>
-    <li><a href="/projects/markdown/dingus" title="Online Markdown Web Form">Dingus</a></li>
-</ul>
-
 <h2>Getting the Gist of Markdown's Formatting Syntax</h2>
 <p>This page offers a brief overview of what it's like to use Markdown.
 The <a href="/projects/markdown/syntax" title="Markdown Syntax">syntax page</a> provides complete, detailed documentation for
@@ -241,3 +233,26 @@ you've got to put paragraph tags in your blockquotes:&lt;/p&gt;
 &amp;lt;/blockquote&amp;gt;
 &lt;/code&gt;&lt;/pre&gt;
 </code></pre>
+<h3>codecs test</h3>
+<p>中文测试</p>
+<h3>safety test</h3>
+<p>This should be stripped/escaped in safe_mode.</p>
+<p>&lt;script&gt;
+alert("Hello world!")
+&lt;/script&gt;</p>
+<p>With blank lines.</p>
+<p>&lt;script&gt;</p>
+<p>alert("Hello world!")</p>
+<p>&lt;/script&gt;</p>
+<p>Now with some weirdness</p>
+<p><code>&lt;script &lt;!--
+alert("Hello world!")
+&lt;/script &lt;&gt;</code> `</p>
+<p>Try another way.</p>
+<p>&lt;script &lt;!--
+alert("Hello world!")
+&lt;/script &lt;&gt;</p>
+<p>This time with blank lines.</p>
+<p>&lt;script &lt;!--</p>
+<p>alert("Hello world!")</p>
+<p>&lt;/script &lt;&gt;</p>

@@ -42,8 +42,11 @@ class EntryTest(TestCase):
         user.save()
 
         # load our markdown test sample from files
-        text = open(os.path.join(FILES_DIR, 'markdown-documentation-basics.txt')).read()
-        html = open(os.path.join(FILES_DIR, 'markdown-documentation-basics.html')).read()
+        import codecs
+        text = codecs.open(os.path.join(FILES_DIR, 'markdown-documentation-basics.txt'),
+                           'r', encoding='utf8').read()
+        html = codecs.open(os.path.join(FILES_DIR, 'markdown-documentation-basics.html'),
+                           'r', encoding='utf8').read()
         entry_date = date.today()
         # save, should not cause any exception
         entry = Entry()
@@ -55,6 +58,10 @@ class EntryTest(TestCase):
         # we can query entry from user
         entry = user.entry_set.get(date=entry_date)
         # markdown test, after save, html should translated by markdown
+        # save file for later diff compare
+        fd = codecs.open('/tmp/html', 'w', encoding='utf8')
+        fd.write(entry.html)
+        fd.close()
         self.assertEquals(entry.html, html)
         # after save, text should be the same
         self.assertEquals(entry.text, text)
