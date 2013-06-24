@@ -1,7 +1,9 @@
 # _*_ coding: utf8 _*_
 from django.views.generic.base import TemplateView
-from django.views.generic.edit import CreateView
-from models import Account
+from django.shortcuts import redirect
+from django.core.urlresolvers import reverse
+from models import User
+from forms import RegisterForm
 
 
 # shortcut to get a short name from django generic views
@@ -20,6 +22,37 @@ class HomeView(TemplateView):
 
 
 @_as_view('register')
-class RegisterView(CreateView):
-    template_name = 'register.html'
-    model = Account
+class RegisterView(TemplateView):
+    template_name = 'user/register.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(RegisterView, self).get_context_data(**kwargs)
+        context['form'] = RegisterForm
+        return context
+
+    def post(self, request, *args, **kwargs):
+        form = RegisterForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            if not User.objects.filter(username=username).exists():
+                user = User.objects.create_user(username=username, password=password)
+                user.save()
+                return self.render_to_response({'status': 'success'})
+            else:
+                return self.render_to_response({'status': 'fail', 'form': form})
+        else:
+            return self.render_to_response({'form': form})
+
+
+def login(request):
+    from django.contrib.auth.views import login as login_view
+    return login_view(request,
+                      template_name='user/login.html')
+
+
+def logout(request):
+    from django.contrib.auth import logout as dj_logout
+    dj_logout(request)
+    # redirect to the home page
+    return redirect(reverse('memo.views.home'))

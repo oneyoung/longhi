@@ -15,31 +15,59 @@ class HomeTest(TestCase):
 
 class AccountTest(TestCase):
     def setUp(self):
-        self.account = {'name': 'dummy',
-                        'email': 'test@example.com',
+        self.account = {'nickname': 'dummy',
+                        'username': 'test@example.com',
                         'password': 'dummy'}
+
+        # add this account to db
+        self._register_post(self.account)
 
     def _register_post(self, account):
         # need to provide below fields:
         # name -- as nickname
         # email -- email address
         # passowrd --  login password
-        return self.client.post(reverse('memo.views.register'),
-                                {'name': account['name'],
-                                 'email': account['email'],
-                                 'password': account['password']})
-
-    def _login_post(self, account):
-        # two filed required: email & password
-        return self.client.post(reverse('memo.views.login'),
-                                {'email': account['email'],
-                                 'password': account['password']})
+        return self.client.post(reverse('memo.views.register'), account)
 
     def test_register(self):
-        resp = self._register_post(self.account)
-        # if register success, we should redirect
+        # get register page first
+        resp = self.client.get(reverse('memo.views.register'))
         self.assertEqual(resp.status_code, 200)
 
-        # the same account register should fail
+        account = {'username': 'testtest@test.com',
+                   'password': 'testit'}
+        resp = self._register_post(account)
+        # if register success, we should redirect
+        self.assertIn('been created', resp.content)
+
+        # the same account register should tell you it was taken
+        resp = self._register_post(account)
+        self.assertIn('been taken', resp.content)
 
         # after register, we can login
+        ret = self.client.login(username=account['username'], password=account['password'])
+        self.assertTrue(ret)
+
+        # wrong password should login failed
+        ret = self.client.login(username=account['username'], password='wrongpwd')
+        self.assertFalse(ret)
+
+    def test_logout(self):
+        account = self.account
+        client = self.client
+        client.login(username=account['username'], password=account['password'])
+        auth_key = '_auth_user_id'
+        self.assertIn(auth_key, client.session.keys())
+
+        # issue a GET request to logout
+        resp = client.get(reverse('memo.views.logout'))
+        # after logout, should redirect to home page
+        self.assertRedirects(resp, reverse('memo.views.home'))
+        # check if we really logout, _auth_user_id should not in session
+        self.assertNotIn(auth_key, client.session.keys())
+
+        # POST request should the same result
+        client.login(username=account['username'], password=account['password'])
+        resp = client.post(reverse('memo.views.logout'))
+        self.assertRedirects(resp, reverse('memo.views.home'))
+        self.assertNotIn(auth_key, client.session.keys())
