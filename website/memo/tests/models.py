@@ -57,24 +57,35 @@ class EntryTest(TestCase):
                            'r', encoding='utf8').read()
         html = codecs.open(os.path.join(FILES_DIR, 'markdown-documentation-basics.html'),
                            'r', encoding='utf8').read()
-        entry_date = date.today()
-        # save, should not cause any exception
-        entry = Entry()
-        entry.date = entry_date
-        entry.text = text
-        entry.user = user
-        entry.save()
 
-        # we can query entry from user
-        entry = user.entry_set.get(date=entry_date)
-        # markdown test, after save, html should translated by markdown
-        # save file for later diff compare
-        fd = codecs.open('/tmp/html', 'w', encoding='utf8')
-        fd.write(entry.html)
-        fd.close()
-        self.assertEquals(entry.html, html)
-        # after save, text should be the same
-        self.assertEquals(entry.text, text)
+        def create_entry(entry_date, text, html):
+            # save, should not cause any exception
+            entry = Entry()
+            entry.date = entry_date
+            entry.text = text
+            entry.user = user
+            entry.save()
+
+            # we can query entry from user
+            entry = user.entry_set.get(date=entry_date)
+            # check html output
+            # save file for later diff compare
+            fd = codecs.open('/tmp/html', 'w', encoding='utf8')
+            fd.write(entry.html)
+            fd.close()
+            self.assertEquals(entry.html, html)
+            # after save, text should be the same
+            self.assertEquals(entry.text, text)
+
+        entry_date = date.today()
+        # by default, markdown is not enabled
+        create_entry(entry_date, text, text)
+
+        # turn on markdown trigger
+        user.setting.markdown = True
+        user.setting.save()
+        entry_date = date.today() + timedelta(1)
+        create_entry(entry_date, text, html)
 
 
 class StaticsTest(TestCase):

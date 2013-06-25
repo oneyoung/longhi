@@ -46,6 +46,7 @@ class Statics(models.Model):
 class Setting(models.Model):
     user = models.OneToOneField(User)
     interval = models.IntegerField(default=1)
+    markdown = models.BooleanField(default=False)
 
 
 # signals here
@@ -63,11 +64,15 @@ def user_created_hook(sender, instance, created, **kwargs):
 
 @receiver(pre_save, sender=Entry)
 def entry_save_hook(sender, instance, **kwargs):
-    "auto convert markdown to html when saving"
-    import markdown
-    md = markdown.Markdown(safe_mode='escape',
-                           tab_length=4)
-    instance.html = md.convert(instance.text)
+    "auto convert to html when saving"
+    entry = instance
+    if entry.user and entry.user.setting.markdown:  # check user setting
+        import markdown
+        md = markdown.Markdown(safe_mode='escape',
+                               tab_length=4)
+        entry.html = md.convert(entry.text)
+    else:
+        entry.html = entry.text
 
 
 @receiver(post_save, sender=Entry)
