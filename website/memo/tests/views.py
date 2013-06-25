@@ -117,3 +117,15 @@ class EntrysTest(TestCase):
         expect = (date(2011, 12, 13), 'foobar\nbarfoo\n', True)
         result = str2entrys(string1)[0]
         self.assertTupleEqual(expect, result)
+
+        # multiple entries test
+        string2 = '2011-12-13 *\n\nfoobar\nbarfoo\n\n2011-12-13 *\n\nfoobar\nbarfoo\n\n'
+        result = str2entrys(string2)
+        self.assertTupleEqual(expect, result[0])
+        self.assertTupleEqual(expect, result[1])
+
+        # entry without star
+        string3 = '2011-12-13\n\nfoobar\nbarfoo\n\n'
+        expect = (date(2011, 12, 13), 'foobar\nbarfoo\n', False)
+        result = str2entrys(string3)[0]
+        self.assertTupleEqual(expect, result)
