@@ -1,5 +1,7 @@
+from datetime import date
 from django.test import TestCase
 from django.core.urlresolvers import reverse
+from memo.utils import str2entrys
 import utils
 
 
@@ -74,14 +76,14 @@ class AccountTest(TestCase):
         self.assertNotIn(auth_key, client.session.keys())
 
 
-class EntryTest(TestCase):
+class EntrysTest(TestCase):
     def setUp(self):
         self.user = utils.create_user()
 
     def tearDown(self):
         self.user.delete()
 
-    def str2entry(self):
+    def test_utils_str2entrys(self):
         '''
         the file format is define as following:
         (compatible with ohlife.com export format)
@@ -108,3 +110,10 @@ class EntryTest(TestCase):
         3. at the end of the context, another blank line is required, too.
         4. then a new entry start
         '''
+
+        # str2entrys take a string as input,
+        # return a list, each element is a tuple(date, text, star)
+        string1 = '2011-12-13 *\n\nfoobar\nbarfoo\n\n'
+        expect = (date(2011, 12, 13), 'foobar\nbarfoo\n', True)
+        result = str2entrys(string1)[0]
+        self.assertTupleEqual(expect, result)
