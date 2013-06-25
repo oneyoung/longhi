@@ -1,18 +1,8 @@
-import os.path
 from datetime import date, timedelta
-from memo.models import User, Entry, Statics, Setting
+from memo.models import User, Statics, Setting
 from django.test import TestCase
 from django.core import exceptions
-
-FILES_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'files')
-
-
-def create_user():
-    user = 'test@test.com'
-    pswd = 'usertest'
-    user = User.objects.create_user(username=user, password=pswd)
-    user.save()
-    return user
+import utils
 
 
 class UserTest(TestCase):
@@ -43,7 +33,7 @@ class UserTest(TestCase):
 
 class EntryTest(TestCase):
     def setUp(self):
-        self.user = create_user()
+        self.user = utils.create_user()
 
     def tearDown(self):
         self.user.delete()
@@ -53,18 +43,12 @@ class EntryTest(TestCase):
 
         # load our markdown test sample from files
         import codecs
-        text = codecs.open(os.path.join(FILES_DIR, 'markdown-documentation-basics.txt'),
-                           'r', encoding='utf8').read()
-        html = codecs.open(os.path.join(FILES_DIR, 'markdown-documentation-basics.html'),
-                           'r', encoding='utf8').read()
+        text = utils.read_file('markdown-documentation-basics.txt')
+        html = utils.read_file('markdown-documentation-basics.html')
 
         def create_entry(entry_date, text, html):
-            # save, should not cause any exception
-            entry = Entry()
-            entry.date = entry_date
-            entry.text = text
-            entry.user = user
-            entry.save()
+            # create, should not cause any exception
+            utils.create_entry(date=entry_date, user=user, text=text)
 
             # we can query entry from user
             entry = user.entry_set.get(date=entry_date)
@@ -90,7 +74,7 @@ class EntryTest(TestCase):
 
 class StaticsTest(TestCase):
     def setUp(self):
-        self.user = create_user()
+        self.user = utils.create_user()
 
     def tearDown(self):
         self.user.delete()
@@ -109,12 +93,7 @@ class StaticsTest(TestCase):
 
         # let's create some entrys in a fews dayo
         def create_entry(entry_date):
-            entry = Entry()
-            entry.date = entry_date
-            entry.text = 'text'
-            entry.user = user
-            entry.save()
-            return entry
+            return utils.create_entry(date=entry_date, user=user, text='text')
 
         step = user.setting.interval  # get user set notify interval
         start_date = date.today()
