@@ -1,6 +1,10 @@
 import os.path
 from memo.models import User, Entry
 
+# default user name and password
+username = 'test@test.com'
+password = 'memotest'
+
 
 def get_file(filename):
     "get file path under memo/tests/files"
@@ -16,9 +20,9 @@ def read_file(filename):
 
 def create_user():
     "create a user and then return it"
-    user = 'test@test.com'
-    pswd = 'memotest'
-    user = User.objects.create_user(username=user, password=pswd)
+    global username
+    global password
+    user = User.objects.create_user(username=username, password=password)
     user.save()
     return user
 
