@@ -1,5 +1,6 @@
 from django.test import TestCase
 from django.core.urlresolvers import reverse
+import utils
 
 
 class HomeTest(TestCase):
@@ -71,3 +72,39 @@ class AccountTest(TestCase):
         resp = client.post(reverse('memo.views.logout'))
         self.assertRedirects(resp, reverse('memo.views.home'))
         self.assertNotIn(auth_key, client.session.keys())
+
+
+class EntryTest(TestCase):
+    def setUp(self):
+        self.user = utils.create_user()
+
+    def tearDown(self):
+        self.user.delete()
+
+    def str2entry(self):
+        '''
+        the file format is define as following:
+        (compatible with ohlife.com export format)
+        --------------------------------------------------------
+        YYYY-MM-DD *
+
+        context of the entry, balabala...
+        line1
+
+        line2
+        line3
+        end of the context
+
+        YYYY-MM-DD
+
+        context of the next entry ....
+        ...
+        ...
+        end
+
+        --------------------------------------------------------
+        1. entry started with date, plus an optional '*', indicated whether entry is stared
+        2. a blank line act as a seperator between the ocntext
+        3. at the end of the context, another blank line is required, too.
+        4. then a new entry start
+        '''
