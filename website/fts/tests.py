@@ -29,11 +29,12 @@ def start_selenium_server():
         time.sleep(5)
         return p.pid
 
+start_selenium_server()
+
 
 class AccountTest(LiveServerTestCase):
 
     def setUp(self):
-        start_selenium_server()
         self.browser = webdriver.Remote("http://localhost:4444/wd/hub",
                                         webdriver.DesiredCapabilities.FIREFOX)
         self.browser.implicitly_wait(3)
