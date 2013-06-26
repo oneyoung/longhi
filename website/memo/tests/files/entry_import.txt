@@ -1,0 +1,41 @@
+2013-04-05
+
+This is a file to test import function.
+line .....
+line ....
+
+pargraph2:
+below ..ladsf
+ggs
+
+   many blank lines...
+
+
+
+
+end here
+
+
+2013-05-06 *
+
+this entry is to test star function.
+after imported, this should be marked as stared entry.
+
+balabala.....
+
+end of this entry, end with many blanks
+
+
+
+
+2013-05-07
+
+this entry is to test unicode support.
+
+中文测试...
+啦啦啦    
+
+段落
+
+结束....
+

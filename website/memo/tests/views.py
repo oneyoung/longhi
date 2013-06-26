@@ -2,6 +2,7 @@ from datetime import date
 from django.test import TestCase
 from django.core.urlresolvers import reverse
 from memo.utils import str2entrys
+from memo.models import Entry
 import utils
 
 
@@ -129,3 +130,30 @@ class EntrysTest(TestCase):
         expect = (date(2011, 12, 13), 'foobar\nbarfoo\n', False)
         result = str2entrys(string3)[0]
         self.assertTupleEqual(expect, result)
+
+    def test_import_export_view(self):
+        ''' this view POST request:
+            1. login required
+            2. parameter to determine whether import or export:
+                'action' = 'import'/'export'
+            3. file parameter is userd as uploaded file in 'import' action
+        '''
+        client = self.client
+        user = self.user
+
+        # TODO: should refuse request if no user login
+
+        # ** import test **
+        filename = 'entry_import.txt'
+        import_file = utils.get_file(filename)
+        # user login
+        client.login(username=utils.username, password=utils.password)
+        # and then import file
+        with open(import_file) as fp:
+            client.post(reverse('memo.views.post_io'),
+                        {'action': 'import', 'file': fp})
+        # here we check the result
+        for date, text, star in str2entrys(utils.read_file(filename)):
+            entry = Entry.objects.get(user=user, date=date)
+            self.assertEquals(text, entry.text)
+            self.assertEqual(star, entry.star)
