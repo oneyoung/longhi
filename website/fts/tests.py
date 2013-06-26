@@ -33,7 +33,6 @@ start_selenium_server()
 
 
 class AccountTest(LiveServerTestCase):
-
     def setUp(self):
         self.browser = webdriver.Remote("http://localhost:4444/wd/hub",
                                         webdriver.DesiredCapabilities.FIREFOX)
@@ -54,23 +53,36 @@ class AccountTest(LiveServerTestCase):
         # TODO: use the admin site to create a Poll
         self.fail('finish this test')
 
-    def test_user_register(self):
-        def fill_register_form(username, password, password_confirm=None):
-            # open login page
-            self.browser.get(self.live_server_url + reverse('memo.views.register'))
-            # fill in the email filed
-            tag = self.browser.find_element_by_name('username')
-            tag.send_keys(username)
-            # input the passowrd
-            tag = self.browser.find_element_by_name('password')
-            tag.send_keys(password)
-            # comfirm the passowrd
-            tag = self.browser.find_element_by_name('password_confirm')
-            tag.send_keys(password_confirm if password_confirm else password)
-            # submit
-            tag = self.browser.find_element_by_name('submit')
-            tag.click()
+    def fill_register_form(self, username, password, password_confirm=None):
+        # open login page
+        self.browser.get(self.live_server_url + reverse('memo.views.register'))
+        # fill in the email filed
+        tag = self.browser.find_element_by_name('username')
+        tag.send_keys(username)
+        # input the passowrd
+        tag = self.browser.find_element_by_name('password')
+        tag.send_keys(password)
+        # comfirm the passowrd
+        tag = self.browser.find_element_by_name('password_confirm')
+        tag.send_keys(password_confirm if password_confirm else password)
+        # submit
+        tag = self.browser.find_element_by_name('submit')
+        tag.click()
 
+    def fill_login_form(self, username, password, next=''):
+        url_base = reverse('memo.views.login')
+        url_para = '?next=%s' % next if next else ''
+        self.browser.get(self.live_server_url + url_base + url_para)
+        # fill the username and password field
+        tag = self.browser.find_element_by_name('username')
+        tag.send_keys(username)
+        tag = self.browser.find_element_by_name('password')
+        tag.send_keys(password)
+        # submit
+        tag = self.browser.find_element_by_name('submit')
+        tag.click()
+
+    def test_user_register(self):
         def body_contain(string):
             body = self.browser.find_element_by_tag_name('body')
             self.assertIn(string, body.text)
@@ -79,32 +91,21 @@ class AccountTest(LiveServerTestCase):
         password = 'xxxxxxxx'
 
         # new user register
-        fill_register_form(username, password)
+        self.fill_register_form(username, password)
         # should say that you are successful.
         body_contain('account has been created')
 
         # repeat register should failed if the same username
-        fill_register_form(username, password)
+        self.fill_register_form(username, password)
         # should say account has exists
         body_contain('taken')
 
-        def fill_login_form(username, password):
-            self.browser.get(self.live_server_url + reverse('memo.views.login'))
-            # fill the username and password field
-            tag = self.browser.find_element_by_name('username')
-            tag.send_keys(username)
-            tag = self.browser.find_element_by_name('password')
-            tag.send_keys(password)
-            # submit
-            tag = self.browser.find_element_by_name('submit')
-            tag.click()
-
         # after registion, we can login now
-        fill_login_form(username, password)
+        self.fill_login_form(username, password)
         # TODO: successful login should redirect to other page
 
         # wrong login should say 'didn't match'
-        fill_login_form(username, 'wrong passowrd')
+        self.fill_login_form(username, 'wrong passowrd')
         body_contain('didn\'t match')
 
     def test_login_redirect(self):
