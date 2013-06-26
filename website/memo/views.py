@@ -2,8 +2,10 @@
 from django.views.generic.base import TemplateView
 from django.shortcuts import redirect
 from django.core.urlresolvers import reverse
-from models import User
+from django.contrib.auth import get_user
+from models import User, Entry
 from forms import RegisterForm
+import utils
 
 
 # shortcut to get a short name from django generic views
@@ -56,3 +58,19 @@ def logout(request):
     dj_logout(request)
     # redirect to the home page
     return redirect(reverse('memo.views.home'))
+
+
+@_as_view('post_io')
+class ImportExportView(TemplateView):
+    template_name = 'post/import_export.html'
+
+    def post(self, request, *args, **kwargs):
+        user = get_user(request)
+        action = request.POST.get('action')
+        if action == 'import':
+            f = request.FILES.get('file')
+            for date, text, star in utils.str2entrys(f.read()):
+                Entry(user=user, date=date, text=text, star=star).save()
+        elif action == 'export':
+            pass
+        return self.render_to_response({})

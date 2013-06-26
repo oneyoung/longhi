@@ -11,4 +11,5 @@ urlpatterns = patterns(
     url(r'user/register/$', memo.views.register),
     url(r'user/login/$', memo.views.login),
     url(r'user/logout/$', memo.views.logout),
+    url(r'post/io/$', memo.views.post_io),
 )
