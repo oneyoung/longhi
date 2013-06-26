@@ -43,7 +43,7 @@ class AccountTest(LiveServerTestCase):
 
     def _test_can_browse_homepage_and_register(self):
         # someone opens his browser, and goes to the admin page
-        self.browser.get(self.live_server_url + '/')
+        self.browser.get(self.fullurl('/'))
 
         # he finds a banner to input email address, and a button to go
         email_input = self.browser.find_element(By.NAME, 'email')
@@ -53,9 +53,12 @@ class AccountTest(LiveServerTestCase):
         # TODO: use the admin site to create a Poll
         self.fail('finish this test')
 
+    def fullurl(self, path):
+        return '%s%s' % (self.live_server_url, path)
+
     def fill_register_form(self, username, password, password_confirm=None):
         # open login page
-        self.browser.get(self.live_server_url + reverse('memo.views.register'))
+        self.browser.get(self.fullurl(reverse('memo.views.register')))
         # fill in the email filed
         tag = self.browser.find_element_by_name('username')
         tag.send_keys(username)
@@ -69,10 +72,11 @@ class AccountTest(LiveServerTestCase):
         tag = self.browser.find_element_by_name('submit')
         tag.click()
 
-    def fill_login_form(self, username, password, next=''):
-        url_base = reverse('memo.views.login')
-        url_para = '?next=%s' % next if next else ''
-        self.browser.get(self.live_server_url + url_base + url_para)
+    def fill_login_form(self, username, password, next='', openpage=True):
+        if openpage:
+            url_base = reverse('memo.views.login')
+            url_para = '?next=%s' % next if next else ''
+            self.browser.get(self.fullurl(url_base + url_para))
         # fill the username and password field
         tag = self.browser.find_element_by_name('username')
         tag.send_keys(username)
@@ -109,4 +113,16 @@ class AccountTest(LiveServerTestCase):
         body_contain('didn\'t match')
 
     def test_login_redirect(self):
-        pass
+        # create a user
+        username = 'loginredirect@gmail.com'
+        password = 'xxxxxxxx'
+        # new user register
+        self.fill_register_form(username, password)
+
+        # test begin
+        target_url = self.fullurl(reverse('memo.views.post_io'))
+        self.browser.get(target_url)
+        # we should redirect to login page, and fill login page
+        self.fill_login_form(username, password, openpage=False)
+        # then we should redirect to the same target_url
+        self.assertEquals(self.browser.current_url, target_url)
