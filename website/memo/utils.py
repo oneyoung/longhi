@@ -27,3 +27,11 @@ def str2entrys(string):
 
     extract_entry(string)
     return result
+
+
+def entry2str(entry):
+    return '%(date)s%(star)s\n\n%(text)s\n' % {
+        'date': entry.date.strftime('%Y-%m-%d'),
+        'star': ' *' if entry.star else '',
+        'text': entry.text,
+    }

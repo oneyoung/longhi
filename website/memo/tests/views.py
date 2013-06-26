@@ -140,6 +140,7 @@ class EntrysTest(TestCase):
         '''
         client = self.client
         user = self.user
+        url = reverse('memo.views.post_io')
 
         # ** import test **
         filename = 'entry_import.txt'
@@ -148,13 +149,20 @@ class EntrysTest(TestCase):
         client.login(username=utils.username, password=utils.password)
         # and then import file
         with open(import_file) as fp:
-            client.post(reverse('memo.views.post_io'),
-                        {'action': 'import', 'file': fp})
+            client.post(url, {'action': 'import', 'file': fp})
         # here we check the result
         for date, text, star in str2entrys(utils.read_file(filename)):
             entry = Entry.objects.get(user=user, date=date)
             self.assertEquals(text, entry.text)
             self.assertEqual(star, entry.star)
+
+        # ** export test **
+        resp = client.post(url, {'action': 'export'})
+        # check if file attached
+        self.assertIn('attachment; filename=', resp.get('Content-Disposition'))
+        # export file should the same as import file
+        import_content = open(import_file).read()
+        self.assertEquals(import_content, resp.content)
 
     def test_login_required(self):
         def test_view(view_name):

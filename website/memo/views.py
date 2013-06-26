@@ -1,4 +1,5 @@
 # _*_ coding: utf8 _*_
+from django import http
 from django.views.generic.base import TemplateView
 from django.shortcuts import redirect
 from django.core.urlresolvers import reverse
@@ -78,5 +79,8 @@ class ImportExportView(TemplateView):
             for date, text, star in utils.str2entrys(f.read()):
                 Entry(user=user, date=date, text=text, star=star).save()
         elif action == 'export':
-            pass
+            buf = ''.join(map(lambda e: utils.entry2str(e), user.entry_set.all()))
+            resp = http.HttpResponse(buf, content_type='text/plain')
+            resp['Content-Disposition'] = 'attachment; filename="entrys_export.txt"'
+            return resp
         return self.render_to_response({})
