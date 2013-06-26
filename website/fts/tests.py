@@ -105,3 +105,6 @@ class AccountTest(LiveServerTestCase):
         # wrong login should say 'didn't match'
         fill_login_form(username, 'wrong passowrd')
         body_contain('didn\'t match')
+
+    def test_login_redirect(self):
+        pass
