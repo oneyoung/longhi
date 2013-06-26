@@ -162,3 +162,6 @@ LOGGING = {
         },
     }
 }
+
+# setting for memo app
+LOGIN_URL = '/user/login/'

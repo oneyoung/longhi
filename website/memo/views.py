@@ -2,18 +2,24 @@
 from django.views.generic.base import TemplateView
 from django.shortcuts import redirect
 from django.core.urlresolvers import reverse
-from django.contrib.auth import get_user
 from models import User, Entry
 from forms import RegisterForm
 import utils
 
 
-# shortcut to get a short name from django generic views
-# old style: app.views.ViewClass.as_view()
-# new style: app.views.NAME
-def _as_view(name):
+def _as_view(name, login=False):
+    ''' class decorator to get a short name from django generic views
+    parameters:
+        name -- short name for view function
+        login -- whether the view need user login
+    # old style: app.views.ViewClass.as_view()
+    # new style: app.views.NAME
+    '''
+
+    from django.contrib.auth.decorators import login_required
+
     def decorator(cls):
-        globals()[name] = cls.as_view()
+        globals()[name] = login_required(cls.as_view()) if login else cls.as_view()
         return cls
     return decorator
 
@@ -60,12 +66,12 @@ def logout(request):
     return redirect(reverse('memo.views.home'))
 
 
-@_as_view('post_io')
+@_as_view('post_io', login=True)
 class ImportExportView(TemplateView):
     template_name = 'post/import_export.html'
 
     def post(self, request, *args, **kwargs):
-        user = get_user(request)
+        user = request.user
         action = request.POST.get('action')
         if action == 'import':
             f = request.FILES.get('file')

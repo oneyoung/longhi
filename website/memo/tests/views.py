@@ -141,8 +141,6 @@ class EntrysTest(TestCase):
         client = self.client
         user = self.user
 
-        # TODO: should refuse request if no user login
-
         # ** import test **
         filename = 'entry_import.txt'
         import_file = utils.get_file(filename)
@@ -157,3 +155,29 @@ class EntrysTest(TestCase):
             entry = Entry.objects.get(user=user, date=date)
             self.assertEquals(text, entry.text)
             self.assertEqual(star, entry.star)
+
+    def test_login_required(self):
+        def test_view(view_name):
+            client = self.client
+            url = reverse(view_name)
+            redirect_url = reverse('memo.views.login') + '?next=%s' % url
+
+            def valid_resp(resp):
+                self.assertRedirects(resp, redirect_url)
+                # if we login by this url, should go to original url
+                ret = client.post(redirect_url, {'username': utils.username,
+                                                 'password': utils.password, })
+                self.assertRedirects(ret, url)
+                # logout after test
+                client.logout()
+
+            # GET test
+            resp = client.get(url)
+            valid_resp(resp)
+            # POST test
+            resp = client.post(reverse(view_name), {})
+            valid_resp(resp)
+
+        views2test = ['memo.views.post_io']
+        for view_name in views2test:
+            test_view(view_name)
