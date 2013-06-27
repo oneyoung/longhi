@@ -1,6 +1,6 @@
 # _*_ coding: utf8 _*_
 from django import http
-from django.views.generic.base import TemplateView
+from django.views.generic.base import View, TemplateView
 from django.shortcuts import redirect
 from django.core.urlresolvers import reverse
 from models import User, Entry
@@ -84,3 +84,12 @@ class ImportExportView(TemplateView):
             resp['Content-Disposition'] = 'attachment; filename="entrys_export.txt"'
             return resp
         return self.render_to_response({})
+
+
+@_as_view('memo_ajax', login=True)
+class AjaxView(View):
+    def get(self, request, *args, **kwargs):
+        pass
+
+    def post(self, request, *args, **kwargs):
+        pass
