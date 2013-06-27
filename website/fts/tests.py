@@ -120,7 +120,7 @@ class AccountTest(LiveServerTestCase):
         self.fill_register_form(username, password)
 
         # test begin
-        target_url = self.fullurl(reverse('memo.views.post_io'))
+        target_url = self.fullurl(reverse('memo.views.memo_io'))
         self.browser.get(target_url)
         # we should redirect to login page, and fill login page
         self.fill_login_form(username, password, openpage=False)

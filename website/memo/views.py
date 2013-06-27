@@ -67,9 +67,9 @@ def logout(request):
     return redirect(reverse('memo.views.home'))
 
 
-@_as_view('post_io', login=True)
+@_as_view('memo_io', login=True)
 class ImportExportView(TemplateView):
-    template_name = 'post/import_export.html'
+    template_name = 'memo/import_export.html'
 
     def post(self, request, *args, **kwargs):
         user = request.user

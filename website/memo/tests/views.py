@@ -140,7 +140,7 @@ class EntrysTest(TestCase):
         '''
         client = self.client
         user = self.user
-        url = reverse('memo.views.post_io')
+        url = reverse('memo.views.memo_io')
 
         # ** import test **
         filename = 'entry_import.txt'
@@ -186,6 +186,6 @@ class EntrysTest(TestCase):
             resp = client.post(reverse(view_name), {})
             valid_resp(resp)
 
-        views2test = ['memo.views.post_io']
+        views2test = ['memo.views.memo_io']
         for view_name in views2test:
             test_view(view_name)
