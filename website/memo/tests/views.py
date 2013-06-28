@@ -206,9 +206,12 @@ class EntrysTest(TestCase):
             if text:
                 request['text'] = text
 
-            resp = client.post(url, request,
+            resp = client.post(url, json.dumps(request), 'text/json',
                                HTTP_X_REQUESTED_WITH='XMLHttpRequest')
-            return json.loads(resp.content)
+            resp_json = json.loads(resp.content)
+            if not resp_json['status']:
+                print resp_json['msg']
+            return resp_json
 
         entry_date = date.today()
         entry_text = 'balabala\n'

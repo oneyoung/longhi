@@ -1,4 +1,6 @@
 # _*_ coding: utf8 _*_
+import json
+from datetime import datetime
 from django import http
 from django.views.generic.base import View, TemplateView
 from django.shortcuts import redirect
@@ -137,4 +139,26 @@ class AjaxView(View):
                 'msg': 'OPTIONAL MESSAGE',
             }
         '''
-        pass
+        try:
+            req_json = json.loads(request.read())
+            date = datetime.strptime(req_json['date'], '%Y-%m-%d').date()
+            user = request.user
+
+            entry, created = Entry.objects.get_or_create(user=user, date=date)
+            entry.star = req_json['star']
+            text = req_json.get('text')
+            if text:
+                entry.text = text
+            entry.save()
+
+            response = {
+                'status': True,
+                'msg': 'OK',
+            }
+        except Exception, e:
+            response = {
+                'status': False,
+                'msg': str(e),
+            }
+        finally:
+            return http.HttpResponse(json.dumps(response))
