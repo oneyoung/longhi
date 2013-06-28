@@ -89,6 +89,38 @@ class ImportExportView(TemplateView):
 @_as_view('memo_ajax', login=True)
 class AjaxView(View):
     def get(self, request, *args, **kwargs):
+        ''' get entry with ajax request and return json format
+        URL parameters:
+            mode=single:
+                query=METHOD -- query method, can be 'date', 'random', 'next', 'prev':
+                    'date' -> require 'date'
+                    'random' -> not other parameters required
+                    'next', 'prev' -> require 'date' as baseline
+                date=YYYY-MM-DD -- targeted query date, all date must be in 'YYYY-MM-DD' format
+            mode=batch:
+                query=all/year/month/range/star
+                value=VALUE, format determined by query type
+                    year -> YYYY
+                    month -> YYYY-MM
+                    range -> YYYY-MM-DD_YYYY-MM-DD
+            text -- specified whether to fetch original text, default is False
+
+        response:
+            {
+                'status' = True/False, /* if request success, return True, else False */
+                'msg' = 'OPTIONAL MESSAGE if REQUEST FAILED',
+                'count' = NUM, /* number of entries return */
+                'entries' = [
+                    {'date': 'YYYY-MM-DD',
+                     'star': True/False,
+                     'html': 'CONTENT OF THE ENTRY IN HTML',
+                     'text': 'CONTENT OF THE ENTRY IN TEXT', /* optional, return if text set */
+                    },
+                    { ... }, /* entry 2 */
+                    ...
+                ]
+            }
+        '''
         pass
 
     def post(self, request, *args, **kwargs):
