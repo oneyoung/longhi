@@ -124,4 +124,17 @@ class AjaxView(View):
         pass
 
     def post(self, request, *args, **kwargs):
+        '''
+        request:
+            {
+                'date': 'YYYY-MM-DD',
+                'star': True/False,
+                'text': 'CONTENT',  /* optional field, no need for only star request */
+            }
+        response:
+            {
+                'status': True/False,
+                'msg': 'OPTIONAL MESSAGE',
+            }
+        '''
         pass

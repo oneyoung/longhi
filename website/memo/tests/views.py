@@ -1,3 +1,4 @@
+import json
 from datetime import date
 from django.test import TestCase
 from django.core.urlresolvers import reverse
@@ -189,3 +190,41 @@ class EntrysTest(TestCase):
         views2test = ['memo.views.memo_io']
         for view_name in views2test:
             test_view(view_name)
+
+    def test_ajax_request_post(self):
+        url = reverse('memo.views.memo_ajax')
+        client = self.client
+        user = self.user
+        # need to login
+        client.login(username=utils.username, password=utils.password)
+
+        def post_entry(date, star, text=''):
+            request = {
+                'date': date.strftime('%Y-%m-%d'),
+                'star': star,
+            }
+            if text:
+                request['text'] = text
+
+            resp = client.post(url, request,
+                               HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+            return json.loads(resp.content)
+
+        entry_date = date.today()
+        entry_text = 'balabala\n'
+        result = post_entry(entry_date, False, entry_text)
+        # the response status should be true
+        self.assertTrue(result['status'])
+        # got the entry and compare
+        entry0 = user.entry_set.get(date=entry_date)
+        self.assertFalse(entry0.star)
+        self.assertEquals(entry0.text, entry_text)
+
+        # star the entry only
+        result = post_entry(entry_date, True)
+        # the response status should be true
+        self.assertTrue(result['status'])
+        # got the entry and compare
+        entry0 = user.entry_set.get(date=entry_date)
+        self.assertTrue(entry0.star)
+        self.assertEquals(entry0.text, entry_text)
