@@ -122,7 +122,57 @@ class AjaxView(View):
                 ]
             }
         '''
-        pass
+        try:
+            mode = request.GET.get('mode')
+            query = request.GET.get('query')
+            value = request.GET.get('value')
+            text = request.GET.get('text', False)
+            queryset = request.user.entry_set
+
+            def stuff_response(entrys):
+                def entry2dict(entry):
+                    d = {
+                        'date': utils.date2str(entry.date),
+                        'star': entry.star,
+                        'html': entry.html
+                    }
+                    if text:
+                        d['text'] = entry.text
+                    return d
+
+                return {
+                    'status': True,
+                    'msg': 'OK',
+                    'count': len(entrys),
+                    'entries': map(entry2dict, entrys),
+                }
+
+            if mode == 'single':  # single mode request
+                if query == 'date':
+                    date = utils.str2date(value)
+                    entry = queryset.get(date=date)
+                elif query == 'next':
+                    date = utils.str2date(value)
+                    entry = queryset.filter(date__gt=date).order_by('date')[0]
+                elif query == 'prev':
+                    date = utils.str2date(value)
+                    entry = queryset.filter(date__lt=date).order_by('-date')[0]
+                elif query == 'random':
+                    import random
+                    all_objs = queryset.all()
+                    index = random.randrange(0, len(all_objs))
+                    entry = all_objs[index]
+                response = stuff_response([entry])
+            elif mode == 'batch':
+                pass
+        except Exception, e:
+            # we adopt a schema here: if any wrong happen, just return False
+            response = {
+                'status': False,
+                'msg': str(e),
+            }
+        finally:
+            return http.HttpResponse(json.dumps(response))
 
     def post(self, request, *args, **kwargs):
         '''
