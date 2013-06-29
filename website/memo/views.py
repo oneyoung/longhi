@@ -225,3 +225,13 @@ class AjaxView(View):
             }
         finally:
             return http.HttpResponse(json.dumps(response))
+
+
+@_as_view('memo_write', login=True)
+class WriteView(TemplateView):
+    template_name = 'memo/write.html'
+
+
+@_as_view('memo_entry', login=True)
+class EntryView(TemplateView):
+    template_name = 'memo/entry.html'
