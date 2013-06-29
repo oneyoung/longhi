@@ -1,6 +1,5 @@
 # _*_ coding: utf8 _*_
 import json
-from datetime import datetime
 from django import http
 from django.views.generic.base import View, TemplateView
 from django.shortcuts import redirect
@@ -95,17 +94,17 @@ class AjaxView(View):
         URL parameters:
             mode=single:
                 query=METHOD -- query method, can be 'date', 'random', 'next', 'prev':
-                    'date' -> require 'date'
+                    'date' -> require 'value' as target date
                     'random' -> not other parameters required
-                    'next', 'prev' -> require 'date' as baseline
-                date=YYYY-MM-DD -- targeted query date, all date must be in 'YYYY-MM-DD' format
+                    'next', 'prev' -> require 'value' as baseline
+                value=YYYY-MM-DD -- targeted query date, all date must be in 'YYYY-MM-DD' format
             mode=batch:
                 query=all/year/month/range/star
                 value=VALUE, format determined by query type
                     year -> YYYY
                     month -> YYYY-MM
                     range -> YYYY-MM-DD_YYYY-MM-DD
-            text -- specified whether to fetch original text, default is False
+            text -- specified whether to fetch original text, default is 'false'
 
         response:
             {
@@ -141,7 +140,7 @@ class AjaxView(View):
         '''
         try:
             req_json = json.loads(request.read())
-            date = datetime.strptime(req_json['date'], '%Y-%m-%d').date()
+            date = utils.str2date(req_json['date'])
             user = request.user
 
             entry, created = Entry.objects.get_or_create(user=user, date=date)
