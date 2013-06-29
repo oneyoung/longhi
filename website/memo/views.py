@@ -93,9 +93,9 @@ class AjaxView(View):
         ''' get entry with ajax request and return json format
         URL parameters:
             mode=single:
-                query=METHOD -- query method, can be 'date', 'random', 'next', 'prev':
+                query=METHOD -- query method, can be 'date', 'random', 'next', 'prev', 'latest':
                     'date' -> require 'value' as target date
-                    'random' -> not other parameters required
+                    'random', 'latest' -> not other parameters required
                     'next', 'prev' -> require 'value' as baseline
                 value=YYYY-MM-DD -- targeted query date, all date must be in 'YYYY-MM-DD' format
             mode=batch:
@@ -162,6 +162,8 @@ class AjaxView(View):
                     all_objs = queryset.all()
                     index = random.randrange(0, len(all_objs))
                     entry = all_objs[index]
+                elif query == 'latest':
+                    entry = queryset.latest('date')
                 response = stuff_response([entry])
 
             elif mode == 'batch':

@@ -309,6 +309,9 @@ class EntrysTest(TestCase):
         # query=prev
         query = single_query('prev', query_date)
         self.assertEqual(query_date - timedelta(interval), query['date'])
+        # query=latest
+        query = single_query('latest')
+        self.assertEqual(date(2013, 5, 30), query['date'])
         # query=random
         query1 = single_query('random')
         query2 = single_query('random')
