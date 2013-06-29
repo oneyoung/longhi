@@ -254,7 +254,7 @@ class EntrysTest(TestCase):
         base_date = date(2012, 5, 1)
         for delta in range(30):
             current = base_date + timedelta(delta)
-            utils.create_entry(user=user, date=current, text='balaba', star=True)
+            utils.create_entry(user=user, date=current, text='balaba')
 
         def do_request(mode, query, value='', text=False):
             import urllib
@@ -314,7 +314,7 @@ class EntrysTest(TestCase):
 
         # --> batch query test <--
         def batch_query(query, value=None, text=False):
-            resp = do_request('batch', value, text)
+            resp = do_request('batch', query, value, text)
             # should success
             self.assertTrue(resp['status'])
             return uppack_entrys(resp)
@@ -337,7 +337,9 @@ class EntrysTest(TestCase):
         querys = batch_query('star')
         self.assertEqual(30, len(querys))
         # query=range
-        querys = batch_query('month', '2013-04-25_2013-05-05')
+        querys = batch_query('range', '2013-04-25_2013-05-05')
         self.assertEqual(5, len(querys))
 
         # text test
+        single_query('random', text=True)
+        batch_query('year', '2013', text=True)

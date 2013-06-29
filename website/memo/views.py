@@ -163,8 +163,22 @@ class AjaxView(View):
                     index = random.randrange(0, len(all_objs))
                     entry = all_objs[index]
                 response = stuff_response([entry])
+
             elif mode == 'batch':
-                pass
+                if query == 'all':
+                    entries = queryset.all()
+                elif query == 'year':
+                    year = int(value)
+                    entries = queryset.filter(date__year=year)
+                elif query == 'month':
+                    year, month = map(int, value.split('-'))
+                    entries = queryset.filter(date__year=year, date__month=month)
+                elif query == 'range':
+                    start, end = map(utils.str2date, value.split('_'))
+                    entries = queryset.filter(date__range=(start, end))
+                elif query == 'star':
+                    entries = queryset.filter(star=True)
+                response = stuff_response(entries.order_by('date'))
         except Exception, e:
             # we adopt a schema here: if any wrong happen, just return False
             response = {
