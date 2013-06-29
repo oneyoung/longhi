@@ -237,11 +237,24 @@ class EntrysTest(TestCase):
         client = self.client
         user = self.user
 
-        # first, let's create a bunch of entrys
+        # first, let's create a bunch of 30 entrys, with wholes
+        interval = 2
         base_date = date(2013, 1, 1)
-        for delta in range(60):
-            current = base_date + timedelta(delta)
+        for delta in range(30):
+            current = base_date + timedelta(delta * interval)
             utils.create_entry(user=user, date=current, text='balaba')
+
+        # then, let's create a bunch of 30 stared entrys
+        base_date = date(2013, 5, 1)
+        for delta in range(30):
+            current = base_date + timedelta(delta)
+            utils.create_entry(user=user, date=current, text='balaba', star=True)
+
+        # then, let's create a bunch of 30 stared entrys in 2012
+        base_date = date(2012, 5, 1)
+        for delta in range(30):
+            current = base_date + timedelta(delta)
+            utils.create_entry(user=user, date=current, text='balaba', star=True)
 
         def do_request(mode, query, value='', text=False):
             import urllib
@@ -258,6 +271,23 @@ class EntrysTest(TestCase):
                 print resp_json['msg']
             return resp_json
 
+        def uppack_entrys(resp, text=False):
+            entrys = resp.get('entries')
+            # count should equal num of entrys
+            self.assertEqual(resp.get('count'), len(entrys))
+
+            def json2entry(e):
+                entry = {
+                    'date': str2date(e['date']),
+                    'star': e['star'],
+                    'html': e['html'],
+                }
+                if text:
+                    entry['text'] = e['text']
+                return entry
+
+            return map(json2entry, entrys)
+
         # --> single query test <--
         def single_query(query, value=None, text=False):
             resp = do_request('single', query, date2str(value) if value else '', text)
@@ -265,15 +295,7 @@ class EntrysTest(TestCase):
             self.assertTrue(resp['status'])
             self.assertEqual(1, resp['count'])
             # get the entry
-            e = resp.get('entries')[0]
-            entry = {
-                'date': str2date(e['date']),
-                'star': e['star'],
-                'html': e['html'],
-            }
-            if text:
-                entry['text'] = e['text']
-            return entry
+            return uppack_entrys(resp, text)[0]
 
         query_date = date(2013, 1, 15)
         # query=date
@@ -281,13 +303,41 @@ class EntrysTest(TestCase):
         self.assertEqual(query_date, query['date'])
         # query=next
         query = single_query('next', query_date)
-        self.assertEqual(query_date + timedelta(1), query['date'])
+        self.assertEqual(query_date + timedelta(interval), query['date'])
         # query=prev
         query = single_query('prev', query_date)
-        self.assertEqual(query_date - timedelta(1), query['date'])
+        self.assertEqual(query_date - timedelta(interval), query['date'])
         # query=random
         query1 = single_query('random')
         query2 = single_query('random')
         self.assertNotEqual(query1['date'], query2['date'])  # unlikely to get same query
+
+        # --> batch query test <--
+        def batch_query(query, value=None, text=False):
+            resp = do_request('batch', value, text)
+            # should success
+            self.assertTrue(resp['status'])
+            return uppack_entrys(resp)
+
+        # query=all
+        querys = batch_query('all')
+        self.assertEqual(90, len(querys))
+        # entry sanity check
+        for e in querys:
+            eo = user.entry_set.get(date=e['date'])
+            self.assertEqual(eo.star, e['star'])
+            self.assertEquals(eo.html, e['html'])
+        # query=year
+        querys = batch_query('year', '2013')
+        self.assertEqual(60, len(querys))
+        # query=month
+        querys = batch_query('month', '2013-05')
+        self.assertEqual(30, len(querys))
+        # query=star
+        querys = batch_query('star')
+        self.assertEqual(30, len(querys))
+        # query=range
+        querys = batch_query('month', '2013-04-25_2013-05-05')
+        self.assertEqual(5, len(querys))
 
         # text test
