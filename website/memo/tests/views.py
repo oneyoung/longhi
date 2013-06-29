@@ -1,8 +1,8 @@
 import json
-from datetime import date
+from datetime import date, timedelta
 from django.test import TestCase
 from django.core.urlresolvers import reverse
-from memo.utils import str2entrys
+from memo.utils import str2entrys, str2date, date2str
 from memo.models import Entry
 import utils
 
@@ -200,7 +200,7 @@ class EntrysTest(TestCase):
 
         def post_entry(date, star, text=''):
             request = {
-                'date': date.strftime('%Y-%m-%d'),
+                'date': date2str(date),
                 'star': star,
             }
             if text:
@@ -231,3 +231,60 @@ class EntrysTest(TestCase):
         entry0 = user.entry_set.get(date=entry_date)
         self.assertTrue(entry0.star)
         self.assertEquals(entry0.text, entry_text)
+
+    def test_ajax_request_get(self):
+        client = self.client
+        user = self.user
+
+        # first, let's create a bunch of entrys
+        base_date = date(2013, 1, 1)
+        for delta in range(60):
+            current = base_date + timedelta(delta)
+            utils.create_entry(user=user, date=current, text='balaba')
+
+        def do_request(mode, query, value='', text=False):
+            import urllib
+            base_url = reverse('memo.views.memo_ajax')
+            params = {'mode': mode, 'query': query}
+            if value:
+                params['value'] = value
+            if text:
+                params['text'] = 'true'
+            url = base_url + '?%s' % urllib.urlencode(params)
+            resp = client.get(url, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+            resp_json = json.loads(resp.content)
+            if not resp_json['status']:  # print error msg when request failed
+                print resp_json['msg']
+            return resp_json
+
+        # --> single query test <--
+        def single_query(query, value=None, text=False):
+            resp = do_request('single', query, date2str(value) if value else '', text)
+            # should success and only one query return
+            self.assertTrue(resp['status'])
+            self.assertEqual(1, resp['count'])
+            # get the entry
+            e = resp.get('entries')[0]
+            entry = {
+                'date': str2date(e['date']),
+                'star': e['star'],
+                'html': e['html'],
+            }
+            if text:
+                entry['text'] = e['text']
+            return entry
+
+        query_date = date(2013, 1, 15)
+        # query=date
+        query = single_query('date', query_date)
+        self.assertEqual(query_date, query['date'])
+        # query=next
+        query = single_query('next', query_date)
+        self.assertEqual(query_date + timedelta(1), query['date'])
+        # query=prev
+        query = single_query('prev', query_date)
+        self.assertEqual(query_date - timedelta(1), query['date'])
+        # query=random
+        query1 = single_query('random')
+        query2 = single_query('random')
+        self.assertNotEqual(query1['date'], query2['date'])  # unlikely to get same query
