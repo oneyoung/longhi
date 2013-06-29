@@ -81,8 +81,10 @@ class AccountTest(TestCase):
 class EntrysTest(TestCase):
     def setUp(self):
         self.user = utils.create_user()
+        self.client.login(username=utils.username, password=utils.password)
 
     def tearDown(self):
+        self.client.logout()
         self.user.delete()
 
     def test_utils_str2entrys(self):
@@ -146,8 +148,6 @@ class EntrysTest(TestCase):
         # ** import test **
         filename = 'entry_import.txt'
         import_file = utils.get_file(filename)
-        # user login
-        client.login(username=utils.username, password=utils.password)
         # and then import file
         with open(import_file) as fp:
             client.post(url, {'action': 'import', 'file': fp})
@@ -166,6 +166,9 @@ class EntrysTest(TestCase):
         self.assertEquals(import_content, resp.content)
 
     def test_login_required(self):
+        # logout first
+        self.client.logout()
+
         def test_view(view_name):
             client = self.client
             url = reverse(view_name)
@@ -195,8 +198,6 @@ class EntrysTest(TestCase):
         url = reverse('memo.views.memo_ajax')
         client = self.client
         user = self.user
-        # need to login
-        client.login(username=utils.username, password=utils.password)
 
         def post_entry(date, star, text=''):
             request = {
@@ -288,3 +289,5 @@ class EntrysTest(TestCase):
         query1 = single_query('random')
         query2 = single_query('random')
         self.assertNotEqual(query1['date'], query2['date'])  # unlikely to get same query
+
+        # text test
