@@ -1,25 +1,31 @@
 {% extends 'base.html' %}
+{% load static from staticfiles %}
 
 {% block body %}
-{% if form.errors %}
-<p>Your email and password didn't match. Please try again.</p>
-{% endif %}
+<div class="login">
+  <div class="login-screen">
+    <div class="login-icon">
+      <img src="{% static 'flatui/images/login/icon.png' %}" alt="Welcome to Mail App" />
+      <h4>Welcome to <small>Mail App</small></h4>
+    </div>
 
-<form method="post" action="{% url 'memo.views.login' %}">
-{% csrf_token %}
-<table>
-<tr>
-    <td><label for="id_username">Email</label></td>
-    <td>{{ form.username }}</td>
-</tr>
-<tr>
-    <td>{{ form.password.label_tag }}</td>
-    <td>{{ form.password }}</td>
-</tr>
-</table>
+    <form class="login-form" method="post" action="{% url 'memo.views.login' %}">
+      {% csrf_token %}
+      {% if form.errors %}
+      <p class="text-error">Email and password didn't match. Please try again.</p>
+      {% endif %}
+      <div class="control-group">
+        <input name="username" type="text" class="login-field" placeholder="Enter your Email" id="login-name"  {% if form.username.value %}value="{{ form.username.value }}"{% endif %}/>
+      </div>
 
-<input name= "submit" type="submit" value="login" />
-<input type="hidden" name="next" value="{{ next }}" />
-</form>
+      <div class="control-group">
+        <input name="password" type="password" class="login-field" placeholder="Password" id="login-pass" />
+      </div>
+
+      <input class="btn btn-large btn-block btn-primary" name= "submit" type="submit" value="login" />
+      <input type="hidden" name="next" value="{{ next }}" />
+    </form>
+  </div>
+</div>
 
 {% endblock %}
