@@ -51,15 +51,15 @@ class AccountTest(LiveServerTestCase):
         self.browser.get(self.fullurl('/'))
 
         # without user login, he should see the login and register button
-        self.assertEquals(reverse('memo.views.login'),
-                          self.browser.find_element_by_partial_link_text('Login'))
-        self.assertEquals(reverse('memo.views.register'),
-                          self.browser.find_element_by_partial_link_text('Register'))
+        self.assertEquals(self.fullurl(reverse('memo.views.login')),
+                          self.browser.find_element_by_partial_link_text('Login').get_attribute('href'))
+        self.assertEquals(self.fullurl(reverse('memo.views.register')),
+                          self.browser.find_element_by_partial_link_text('Register').get_attribute('href'))
 
         # after login, he could see logout button
         self.login()
         self.browser.get(self.fullurl('/'))
-        self.assertEquals(reverse('memo.views.logout'),
+        self.assertEquals(self.fullurl(reverse('memo.views.logout')),
                           self.browser.find_element_by_partial_link_text('Logout'))
 
     def fullurl(self, path):

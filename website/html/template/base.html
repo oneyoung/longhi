@@ -14,6 +14,15 @@
 </head>
 
 <body>
+  <!-- nav bar -->
+  <div class="navbar navbar-inverse">
+    <div class="navbar navbar-inner">
+      <ul class="nav">
+        <li><a href="{% url 'memo.views.login' %}">Login</a></li>
+        <li><a href="{% url 'memo.views.register' %}">Register</a></li>
+      </ul>
+    </div>
+  </div>
   {% block body %}{% endblock %}
   <!-- Load JS here for greater good -->
   <!-- Flat-UI js -->
