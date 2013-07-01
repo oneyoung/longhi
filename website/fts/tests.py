@@ -46,28 +46,31 @@ class AccountTest(LiveServerTestCase):
     def login(self):
         self.fill_login_form(self.username, self.password)
 
+    def reverse(self, view):
+        return self.fullurl(reverse(view))
+
+    def fullurl(self, path):
+        return '%s%s' % (self.live_server_url, path)
+
     def test_can_browse_homepage(self):
         # someone opens his browser, and goes to home page
         self.browser.get(self.fullurl('/'))
 
         # without user login, he should see the login and register button
-        self.assertEquals(self.fullurl(reverse('memo.views.login')),
+        self.assertEquals(self.reverse('memo.views.login'),
                           self.browser.find_element_by_partial_link_text('Login').get_attribute('href'))
-        self.assertEquals(self.fullurl(reverse('memo.views.register')),
+        self.assertEquals(self.reverse('memo.views.register'),
                           self.browser.find_element_by_partial_link_text('Register').get_attribute('href'))
 
         # after login, he could see logout button
         self.login()
         self.browser.get(self.fullurl('/'))
-        self.assertEquals(self.fullurl(reverse('memo.views.logout')),
+        self.assertEquals(self.reverse('memo.views.logout'),
                           self.browser.find_element_by_partial_link_text('Logout'))
-
-    def fullurl(self, path):
-        return '%s%s' % (self.live_server_url, path)
 
     def fill_register_form(self, username, password, password_confirm=None, submit=True):
         # open login page
-        self.browser.get(self.fullurl(reverse('memo.views.register')))
+        self.browser.get(self.reverse('memo.views.register'))
         # fill in the email filed
         tag = self.browser.find_element_by_name('username')
         tag.send_keys(username)
@@ -163,7 +166,7 @@ class AccountTest(LiveServerTestCase):
         password = self.password
 
         # test begin
-        target_url = self.fullurl(reverse('memo.views.memo_io'))
+        target_url = self.reverse('memo.views.memo_io')
         self.browser.get(target_url)
         # we should redirect to login page, and fill login page
         self.fill_login_form(username, password, openpage=False)
