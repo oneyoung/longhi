@@ -51,7 +51,9 @@ function checkForm(form) {
     return (input.length >= 6);
   });
   inputHook('password_confirm', function (input) {
-    return form.find('input[name="password"]').val() == input;
+    var passordInput = form.find('input[name="password"]');
+    /* only if password valid and confirmed passowrd match */
+    return passordInput.val() == input && passordInput.parent().hasClass('success');
   });
 
 }
