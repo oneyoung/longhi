@@ -37,6 +37,11 @@ class AccountTest(LiveServerTestCase):
         self.browser = webdriver.Remote("http://localhost:4444/wd/hub",
                                         webdriver.DesiredCapabilities.FIREFOX)
         self.browser.implicitly_wait(3)
+        # create a user
+        self.username = 'accout_test@test.com'
+        self.password = 'xxxxxxxx'
+        # new user register
+        self.fill_register_form(self.username, self.password)
 
     def tearDown(self):
         self.browser.quit()
@@ -56,7 +61,7 @@ class AccountTest(LiveServerTestCase):
     def fullurl(self, path):
         return '%s%s' % (self.live_server_url, path)
 
-    def fill_register_form(self, username, password, password_confirm=None):
+    def fill_register_form(self, username, password, password_confirm=None, submit=True):
         # open login page
         self.browser.get(self.fullurl(reverse('memo.views.register')))
         # fill in the email filed
@@ -72,10 +77,11 @@ class AccountTest(LiveServerTestCase):
         tag = self.browser.find_element_by_name('password_confirm')
         tag.send_keys(password_confirm if password_confirm else password)
         # submit
-        tag = self.browser.find_element_by_name('submit')
-        tag.click()
+        if submit:
+            tag = self.browser.find_element_by_name('submit')
+            tag.click()
 
-    def fill_login_form(self, username, password, next='', openpage=True):
+    def fill_login_form(self, username, password, next='', openpage=True, submit=True):
         if openpage:
             url_base = reverse('memo.views.login')
             url_para = '?next=%s' % next if next else ''
@@ -85,27 +91,33 @@ class AccountTest(LiveServerTestCase):
         tag.send_keys(username)
         tag = self.browser.find_element_by_name('password')
         tag.send_keys(password)
-        # submit
-        tag = self.browser.find_element_by_name('submit')
-        tag.click()
+        if submit:
+            # submit
+            tag = self.browser.find_element_by_name('submit')
+            tag.click()
+
+    def assert_submit_button_disabled(self, state):
+        submit = self.browser.find_element_by_name('submit')
+        disabled = True if submit.get_attribute('disabled') else False
+        self.assertEqual(disabled, state)
+
+    def assert_body_contain(self, string):
+        body = self.browser.find_element_by_tag_name('body')
+        self.assertIn(string, body.text)
 
     def test_user_register(self):
-        def body_contain(string):
-            body = self.browser.find_element_by_tag_name('body')
-            self.assertIn(string, body.text)
-
         username = 'xxxx@gmail.com'
         password = 'xxxxxxxx'
 
         # new user register
         self.fill_register_form(username, password)
         # should say that you are successful.
-        body_contain('account has been created')
+        self.assert_body_contain('account has been created')
 
         # repeat register should failed if the same username
         self.fill_register_form(username, password)
         # should say account has exists
-        body_contain('taken')
+        self.assert_body_contain('taken')
 
         # after registion, we can login now
         self.fill_login_form(username, password)
@@ -113,14 +125,38 @@ class AccountTest(LiveServerTestCase):
 
         # wrong login should say 'didn't match'
         self.fill_login_form(username, 'wrong passowrd')
-        body_contain('didn\'t match')
+        self.assert_body_contain('didn\'t match')
+
+        # --> let's do some test for form valid <--
+        # * invalid email address
+        self.fill_register_form('xxxxx', password, submit=False)
+        self.assert_submit_button_disabled(True)
+        # * short password, less than 6 chars
+        self.fill_register_form(username, 'short', submit=False)
+        self.assert_submit_button_disabled(True)
+        # * not confirm passowrd
+        self.fill_register_form(username, password,
+                                password_confirm='wrong password', submit=False)
+        self.assert_submit_button_disabled(True)
+
+    def test_login(self):
+        username = self.username
+        password = self.password
+        # --> test login form valid <--
+        # * invalid username
+        self.fill_login_form('invalidusername', password, submit=False)
+        self.assert_submit_button_disabled(True)
+        # * invalid password length
+        self.fill_login_form(username, 'short', submit=False)
+        self.assert_submit_button_disabled(True)
+
+        # --> test email and password not match
+        self.fill_login_form(username, 'wrongpassowrd')
+        self.assert_body_contain('try again')
 
     def test_login_redirect(self):
-        # create a user
-        username = 'loginredirect@gmail.com'
-        password = 'xxxxxxxx'
-        # new user register
-        self.fill_register_form(username, password)
+        username = self.username
+        password = self.password
 
         # test begin
         target_url = self.fullurl(reverse('memo.views.memo_io'))
