@@ -21,12 +21,15 @@ function checkForm(form) {
 
   function inputHook(name, callback) {
     $(form).find('input[name="' + name + '"]').keyup(function () {
+      parentDiv = $(this).parent()
       if (callback($(this).val())) {
-        $(this).parent().removeClass('error');
-        $(this).parent().addClass('success');
+        parentDiv.removeClass('error');
+        parentDiv.addClass('success');
+        parentDiv.append($('<i class="input-icon fui-check-inverted"></i>'));
       } else {
-        $(this).parent().removeClass('success');
-        $(this).parent().addClass('error');
+        parentDiv.removeClass('success');
+        parentDiv.addClass('error');
+        parentDiv.find('.input-icon').remove();
       }
       validForm();
     });
