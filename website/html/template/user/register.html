@@ -1,68 +1,7 @@
-{% extends 'base.html' %}
+{% extends 'user/base.html' %}
 {% load static from staticfiles %}
 
-{% block head %}
-<script type="text/javascript">
-
-function checkForm(form) {
-  var submitButton = $(form).find(':submit')
-  function validForm() {
-    var isValid = true;
-    $(form).find('.control-group').each(function () {
-      if (!$(this).hasClass('success')) {
-        isValid = false;
-      }
-    });
-
-    if (isValid) {
-      submitButton.removeAttr('disabled');
-    } else {
-      submitButton.attr('disabled', 'disabled');
-    }
-  }
-
-  function inputHook(name, callback) {
-    $(form).find('input[name="' + name + '"]').keyup(function () {
-      if (callback($(this).val())) {
-        $(this).parent().removeClass('error');
-        $(this).parent().addClass('success');
-      } else {
-        $(this).parent().removeClass('success');
-        $(this).parent().addClass('error');
-      }
-      validForm();
-    });
-  }
-
-  /* first disable the submit button, unless form valid */
-  submitButton.attr('disabled', 'disabled');
-
-  inputHook('username', function (input) {
-    var emailExp = /^[\w\-\.\+]+\@[a-zA-Z0-9\.\-]+\.[a-zA-z0-9]{2,4}$/;
-    return input.match(emailExp);
-  });
-  inputHook('nickname', function (input) {
-    return input.length > 0;
-  });
-  inputHook('password', function (input) {
-    /* clean password_confirm filed */
-    $(form).find('input[name="password_confirm"]').val('').removeClass('success')
-    return (input.length >= 6);
-  });
-  inputHook('password_confirm', function (input) {
-    return form.find('input[name="password"]').val() == input;
-  });
-
-}
-
-$(window).load(function() {
-  checkForm($('form'));
-});
-
-</script>
-{% endblock %}
-
-{% block body %}
+{% block user_base_body %}
 <div class="login">
   <div class="login-screen">
 
@@ -76,7 +15,7 @@ $(window).load(function() {
     <p>Your account has been created.</p>
     <p>Press <a href="{% url 'memo.views.login' %}">here</a> to login</p>
     {% else %}
-    <form class="login-form" method="post" action="{% url 'memo.views.register' %}" class="login-form">
+    <form method="post" action="{% url 'memo.views.register' %}" class="login-form">
       {% csrf_token %}
       {% if status == 'fail' %}
       <p class="text-error">This email address have been taken, please try another.</p>
