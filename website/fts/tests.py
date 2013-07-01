@@ -62,6 +62,9 @@ class AccountTest(LiveServerTestCase):
         # fill in the email filed
         tag = self.browser.find_element_by_name('username')
         tag.send_keys(username)
+        # fill in the nickname filed
+        tag = self.browser.find_element_by_name('nickname')
+        tag.send_keys('Nickname')
         # input the passowrd
         tag = self.browser.find_element_by_name('password')
         tag.send_keys(password)

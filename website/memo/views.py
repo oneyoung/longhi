@@ -45,9 +45,13 @@ class RegisterView(TemplateView):
         if form.is_valid():
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
+            nickname = form.cleaned_data['nickname']
             if not User.objects.filter(username=username).exists():
                 user = User.objects.create_user(username=username, password=password)
                 user.save()
+                setting = user.setting
+                setting.nickname = nickname
+                setting.save()
                 return self.render_to_response({'status': 'success'})
             else:
                 return self.render_to_response({'status': 'fail', 'form': form})

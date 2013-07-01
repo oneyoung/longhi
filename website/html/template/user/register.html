@@ -25,6 +25,10 @@
       </div>
 
       <div class="control-group">
+        <input name="nickname" type="text" class="login-field" placeholder="Your nickname" id="login-name" maxlength="100"  {% if form.username.value %}value="{{ form.username.value }}"{% endif %}/>
+      </div>
+
+      <div class="control-group">
         <input name="password" type="password" class="login-field" placeholder="Password" id="login-pass" />
       </div>
 

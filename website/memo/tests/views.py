@@ -40,6 +40,7 @@ class AccountTest(TestCase):
         self.assertEqual(resp.status_code, 200)
 
         account = {'username': 'testtest@test.com',
+                   'nickname': 'I\'m test',
                    'password': 'testit'}
         resp = self._register_post(account)
         # if register success, we should redirect

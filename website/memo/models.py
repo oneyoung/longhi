@@ -45,6 +45,7 @@ class Statics(models.Model):
 
 class Setting(models.Model):
     user = models.OneToOneField(User)
+    nickname = models.CharField(max_length=100)
     interval = models.IntegerField(default=1)
     markdown = models.BooleanField(default=False)
 
