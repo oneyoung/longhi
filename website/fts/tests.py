@@ -7,9 +7,6 @@ Replace this with more appropriate tests for your application.
 from django.test import LiveServerTestCase
 from django.core.urlresolvers import reverse
 from selenium import webdriver
-from selenium.webdriver.common.by import By
-
-EMAIL_ADDR = "xxx@example.com"
 
 
 def start_selenium_server():
@@ -46,17 +43,24 @@ class AccountTest(LiveServerTestCase):
     def tearDown(self):
         self.browser.quit()
 
-    def _test_can_browse_homepage_and_register(self):
-        # someone opens his browser, and goes to the admin page
+    def login(self):
+        self.fill_login_form(self.username, self.password)
+
+    def test_can_browse_homepage(self):
+        # someone opens his browser, and goes to home page
         self.browser.get(self.fullurl('/'))
 
-        # he finds a banner to input email address, and a button to go
-        email_input = self.browser.find_element(By.NAME, 'email')
-        email_input.send_keys(EMAIL_ADDR)
-        email_input.submit()
+        # without user login, he should see the login and register button
+        self.assertEquals(reverse('memo.views.login'),
+                          self.browser.find_element_by_partial_link_text('Login'))
+        self.assertEquals(reverse('memo.views.register'),
+                          self.browser.find_element_by_partial_link_text('Register'))
 
-        # TODO: use the admin site to create a Poll
-        self.fail('finish this test')
+        # after login, he could see logout button
+        self.login()
+        self.browser.get(self.fullurl('/'))
+        self.assertEquals(reverse('memo.views.logout'),
+                          self.browser.find_element_by_partial_link_text('Logout'))
 
     def fullurl(self, path):
         return '%s%s' % (self.live_server_url, path)
