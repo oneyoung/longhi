@@ -7,6 +7,8 @@
   <!-- Loading Bootstrap & Flat-UI -->
   <link href="{% static 'flatui/bootstrap/css/bootstrap.css' %}" rel="stylesheet">
   <link href="{% static 'flatui/css/flat-ui.css' %}" rel="stylesheet">
+  <!-- load jquery first -->
+  <script src="{% static 'flatui/js/jquery-1.8.3.min.js' %}"></script>
 
   {% block head %}{% endblock %}
 </head>
@@ -15,7 +17,6 @@
   {% block body %}{% endblock %}
   <!-- Load JS here for greater good -->
   <!-- Flat-UI js -->
-  <script src="{% static 'flatui/js/jquery-1.8.3.min.js' %}"></script>
   <script src="{% static 'flatui/js/jquery-ui-1.10.3.custom.min.js' %}"></script>
   <script src="{% static 'flatui/js/jquery.ui.touch-punch.min.js' %}"></script>
   <script src="{% static 'flatui/js/bootstrap.min.js' %}"></script>
