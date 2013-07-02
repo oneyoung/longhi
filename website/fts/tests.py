@@ -37,6 +37,7 @@ class AccountTest(LiveServerTestCase):
         # create a user
         self.username = 'accout_test@test.com'
         self.password = 'xxxxxxxx'
+        self.nickname = 'robot'
         # new user register
         self.fill_register_form(self.username, self.password)
 
@@ -62,11 +63,10 @@ class AccountTest(LiveServerTestCase):
         self.assertEquals(self.reverse('memo.views.register'),
                           self.browser.find_element_by_partial_link_text('Register').get_attribute('href'))
 
-        # after login, he could see logout button
+        # after login, he could see his nickname
         self.login()
         self.browser.get(self.fullurl('/'))
-        self.assertEquals(self.reverse('memo.views.logout'),
-                          self.browser.find_element_by_partial_link_text('Logout'))
+        self.assert_body_contain(self.nickname)
 
     def fill_register_form(self, username, password, password_confirm=None, submit=True):
         # open login page
@@ -76,7 +76,7 @@ class AccountTest(LiveServerTestCase):
         tag.send_keys(username)
         # fill in the nickname filed
         tag = self.browser.find_element_by_name('nickname')
-        tag.send_keys('Nickname')
+        tag.send_keys(self.nickname)
         # input the passowrd
         tag = self.browser.find_element_by_name('password')
         tag.send_keys(password)

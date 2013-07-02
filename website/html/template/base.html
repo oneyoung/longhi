@@ -18,8 +18,19 @@
   <div class="navbar navbar-inverse">
     <div class="navbar navbar-inner">
       <ul class="nav">
+      {% if request.user.is_authenticated %}
+        <li>
+          <a href="#"><h4><small>Hi </small>{{ request.user.setting.nickname }}</h4></a>
+          <ul>
+            <li><a id="settings" href="#">Settings</a></li>
+            <li><a id="logout" href="{% url 'memo.views.logout' %}">Logout</a></li>
+          </ul>
+        </li>
+      {% else %}
+        {{ request }}
         <li><a href="{% url 'memo.views.login' %}">Login</a></li>
         <li><a href="{% url 'memo.views.register' %}">Register</a></li>
+      {% endif %}
       </ul>
     </div>
   </div>

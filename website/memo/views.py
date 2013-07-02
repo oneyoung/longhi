@@ -30,6 +30,9 @@ def _as_view(name, login=False):
 class HomeView(TemplateView):
     template_name = 'home.html'
 
+    def get(self, request, *args, **kwargs):
+        return self.render_to_response({'request': request})
+
 
 @_as_view('register')
 class RegisterView(TemplateView):
