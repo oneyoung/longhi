@@ -32,6 +32,48 @@ $.ajaxSetup({
    },
    cache: true,
 });
+
+function redirect(url) {
+  window.location = url;
+}
+
+function submitEntry(form) {
+  var reqs = {
+    'date': $(form).find('input[name="date"]').val(),
+    'star': $(form).find('input[name="star"]').attr("checked") == "checked",
+    'text': $(form).find('input[name="text"]').val(),
+  };
+  $.ajax({
+    type: 'POST',
+    url: "{% url 'memo.views.memo_ajax' %}",
+    data: JSON.stringify(reqs),
+    success: function(data) {
+      var resp = JSON.parse(data);
+      if (resp.status) {
+        redirect("{% url 'memo.views.memo_entry' %}");
+      } else {
+        console.error('submit failed: ' + resp.msg);
+      }
+    },
+    async: false, /* recv response before submit */
+  });
+}
+
+$(window).load(function () {
+  $('input[name="submit"]').click(function () {
+    submitEntry($('.entry-form'));
+  });
+});
 </script>
 
+{% endblock %}
+
+{% block body %}
+<div class="entry-form">
+  {% csrf_token %}
+  <input name="date" type="text" />
+  <input name="star" type="checkbox" />
+  <input name="text" type="textarea" />
+  <input name="submit" type="submit" />
+</div>
 {% endblock %}
