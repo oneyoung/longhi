@@ -4,9 +4,24 @@ when you run "manage.py test".
 
 Replace this with more appropriate tests for your application.
 """
+import os
 from django.test import LiveServerTestCase
 from django.core.urlresolvers import reverse
 from selenium import webdriver
+
+
+PROXY = os.environ.get('http_proxy', '')
+if PROXY:
+    PROXY_SETTINGS = webdriver.common.proxy.Proxy({
+        "httpProxy": PROXY,
+        "ftpProxy": PROXY,
+        "sslProxy": PROXY,
+        "noProxy": None,
+        "class": "org.openqa.selenium.Proxy",
+        "autodetect": False
+    })
+else:
+    PROXY_SETTINGS = webdriver.common.proxy.Proxy({})
 
 
 def start_selenium_server():
@@ -32,7 +47,8 @@ start_selenium_server()
 class BaseTest(LiveServerTestCase):
     def setUp(self):
         self.browser = webdriver.Remote("http://localhost:4444/wd/hub",
-                                        webdriver.DesiredCapabilities.FIREFOX)
+                                        webdriver.DesiredCapabilities.FIREFOX,
+                                        proxy=PROXY_SETTINGS)
         self.browser.implicitly_wait(3)
         # create a user
         self.username = 'accout_test@test.com'
