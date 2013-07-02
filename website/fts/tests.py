@@ -179,3 +179,23 @@ class AccountTest(BaseTest):
         self.fill_login_form(username, password, openpage=False)
         # then we should redirect to the same target_url
         self.assertEquals(self.browser.current_url, target_url)
+
+
+class MemoTest(BaseTest):
+    def test_entry_write(self):
+        self.login()
+        # open the page
+        url = self.reverse('memo.views.memo_write')
+        self.browser.get(url)
+        # we could see form that can fill date, text and whether to star
+        element = self.browser.find_element_by_name('date')
+        element.send_keys('2013-01-01')
+        element = self.browser.find_element_by_name('text')
+        element.send_keys('This is a test entry.\n haha!\n')
+        element = self.browser.find_element_by_name('star')
+        element.click()  # star the entry
+        # then submit
+        element = self.browser.find_element_by_name('submit')
+        element.click()
+        # we should jump to other page
+        self.assertNotEquals(self.browser.current_url, url)
