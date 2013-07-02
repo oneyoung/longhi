@@ -29,7 +29,7 @@ def start_selenium_server():
 start_selenium_server()
 
 
-class AccountTest(LiveServerTestCase):
+class BaseTest(LiveServerTestCase):
     def setUp(self):
         self.browser = webdriver.Remote("http://localhost:4444/wd/hub",
                                         webdriver.DesiredCapabilities.FIREFOX)
@@ -52,26 +52,6 @@ class AccountTest(LiveServerTestCase):
 
     def fullurl(self, path):
         return '%s%s' % (self.live_server_url, path)
-
-    def test_can_browse_homepage(self):
-        # someone opens his browser, and goes to home page
-        self.browser.get(self.fullurl('/'))
-
-        # without user login, he should see the login and register button
-        self.assertEquals(self.reverse('memo.views.login'),
-                          self.browser.find_element_by_partial_link_text('Login').get_attribute('href'))
-        self.assertEquals(self.reverse('memo.views.register'),
-                          self.browser.find_element_by_partial_link_text('Register').get_attribute('href'))
-
-        self.login()
-        # after login, he could see his nickname, in below pages
-        views = ['memo.views.home',
-                 'memo.views.memo_io',
-                 'memo.views.memo_write',
-                 'memo.views.memo_entry', ]
-        for view in views:
-            self.browser.get(self.reverse(view))
-            self.assert_body_contain(self.nickname)
 
     def fill_register_form(self, username, password, password_confirm=None, submit=True):
         # open login page
@@ -116,6 +96,28 @@ class AccountTest(LiveServerTestCase):
     def assert_body_contain(self, string):
         body = self.browser.find_element_by_tag_name('body')
         self.assertIn(string, body.text)
+
+
+class AccountTest(BaseTest):
+    def test_can_browse_homepage(self):
+        # someone opens his browser, and goes to home page
+        self.browser.get(self.fullurl('/'))
+
+        # without user login, he should see the login and register button
+        self.assertEquals(self.reverse('memo.views.login'),
+                          self.browser.find_element_by_partial_link_text('Login').get_attribute('href'))
+        self.assertEquals(self.reverse('memo.views.register'),
+                          self.browser.find_element_by_partial_link_text('Register').get_attribute('href'))
+
+        self.login()
+        # after login, he could see his nickname, in below pages
+        views = ['memo.views.home',
+                 'memo.views.memo_io',
+                 'memo.views.memo_write',
+                 'memo.views.memo_entry', ]
+        for view in views:
+            self.browser.get(self.reverse(view))
+            self.assert_body_contain(self.nickname)
 
     def test_user_register(self):
         username = 'xxxx@gmail.com'
