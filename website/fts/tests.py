@@ -63,10 +63,15 @@ class AccountTest(LiveServerTestCase):
         self.assertEquals(self.reverse('memo.views.register'),
                           self.browser.find_element_by_partial_link_text('Register').get_attribute('href'))
 
-        # after login, he could see his nickname
         self.login()
-        self.browser.get(self.fullurl('/'))
-        self.assert_body_contain(self.nickname)
+        # after login, he could see his nickname, in below pages
+        views = ['memo.views.home',
+                 'memo.views.memo_io',
+                 'memo.views.memo_write',
+                 'memo.views.memo_entry', ]
+        for view in views:
+            self.browser.get(self.reverse(view))
+            self.assert_body_contain(self.nickname)
 
     def fill_register_form(self, username, password, password_confirm=None, submit=True):
         # open login page

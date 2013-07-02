@@ -26,8 +26,17 @@ def _as_view(name, login=False):
     return decorator
 
 
+class BaseView(TemplateView):
+    def get_context_data(self, **kwargs):
+        context = super(TemplateView, self).get_context_data(**kwargs)
+        # here we add request context for 'base.html' to
+        # determine whether user login
+        context['request'] = self.request
+        return context
+
+
 @_as_view('home')
-class HomeView(TemplateView):
+class HomeView(BaseView):
     template_name = 'home.html'
 
     def get(self, request, *args, **kwargs):
@@ -35,7 +44,7 @@ class HomeView(TemplateView):
 
 
 @_as_view('register')
-class RegisterView(TemplateView):
+class RegisterView(BaseView):
     template_name = 'user/register.html'
 
     def get_context_data(self, **kwargs):
@@ -76,7 +85,7 @@ def logout(request):
 
 
 @_as_view('memo_io', login=True)
-class ImportExportView(TemplateView):
+class ImportExportView(BaseView):
     template_name = 'memo/import_export.html'
 
     def post(self, request, *args, **kwargs):
@@ -237,10 +246,10 @@ class AjaxView(View):
 
 
 @_as_view('memo_write', login=True)
-class WriteView(TemplateView):
+class WriteView(BaseView):
     template_name = 'memo/write.html'
 
 
 @_as_view('memo_entry', login=True)
-class EntryView(TemplateView):
+class EntryView(BaseView):
     template_name = 'memo/entry.html'
