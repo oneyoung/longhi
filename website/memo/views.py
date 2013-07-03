@@ -142,7 +142,7 @@ class AjaxView(View):
             mode = request.GET.get('mode')
             query = request.GET.get('query')
             value = request.GET.get('value')
-            text = request.GET.get('text', False)
+            text = request.GET.get('text', 'false') == 'true'
             queryset = request.user.entry_set
 
             def stuff_response(entrys):

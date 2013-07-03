@@ -49,6 +49,31 @@ function memoAjax(type, data, callback) {
   });
 }
 
+function memoQuery(mode, query, value, text) {
+  var reqs = {
+    'mode': mode,
+    'query': query,
+  };
+  if (value) {
+    reqs['value'] = value;
+  }
+  if (text) {
+    reqs['text'] = 'true';
+  }
+
+  var entrys = null;
+
+  memoAjax('GET', reqs, function (data) {
+    var resp = JSON.parse(data);
+    if (resp.status) {  /* success */
+      entrys = resp.entries;
+    } else {
+      console.error('request failed: ' + resp.msg);
+    }
+  });
+  return entrys;
+}
+
 function redirect(url) {
   window.location = url;
 }
