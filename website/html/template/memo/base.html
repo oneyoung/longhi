@@ -74,6 +74,23 @@ function memoQuery(mode, query, value, text) {
   return entrys;
 }
 
+/* entryFactory -- a helper function to generator a entry block
+ * data: a dict like object that required 'date', 'star', 'html' field
+ * return value: entry object in html
+ */
+function entryFactory(data) {
+  var entry = $('#entry-tpl').clone();
+
+  entry.attr('id', data.date);
+  entry.css('display', '');
+
+  entry.find('.entry-date').text(data.date);
+  entry.find('.entry-star').text(data.star);
+  entry.find('.entry-html').html(data.html);
+
+  return entry;
+}
+
 function redirect(url) {
   window.location = url;
 }
@@ -84,5 +101,11 @@ function redirect(url) {
 {% endblock %}
 
 {% block body %}
+<!-- entry template -->
+<div id="entry-tpl" class="entry" style="display:none">
+  <div class="entry-date"></div>
+  <div class="entry-star"></div>
+  <div class="entry-html"></div>
+</div>
 {% block memo_body %}{% endblock %}
 {% endblock %}
