@@ -5,31 +5,32 @@
 $(window).load(function () {
   var entryPad = $('#entry-pad')
 
-  function singleMemoQuery(query, value) {
+  function singleMemoQuery(btn, query, value) {
     var result = memoQuery('single', query, value);
     if (result) {
       entryPad.empty();
       entryPad.append(entryFactory(result[0]));
     }
+    $(btn).removeClass('active');
   }
 
   /* show latest entry first */
-  singleMemoQuery('latest');
+  singleMemoQuery(null, 'latest');
 
   $('#entry-prev-btn').click(function () {
-    singleMemoQuery('prev', unpackEntry(entryPad).date);
+    singleMemoQuery(this, 'prev', unpackEntry(entryPad).date);
   });
 
   $('#entry-next-btn').click(function () {
-    singleMemoQuery('next', unpackEntry(entryPad).date);
+    singleMemoQuery(this, 'next', unpackEntry(entryPad).date);
   });
 
   $('#entry-latest-btn').click(function () {
-    singleMemoQuery('latest');
+    singleMemoQuery(this, 'latest');
   });
 
   $('#entry-random-btn').click(function () {
-    singleMemoQuery('random');
+    singleMemoQuery(this, 'random');
   });
 
 });
@@ -39,11 +40,13 @@ $(window).load(function () {
 
 {% block memo_body %}
 <div>
-  <div>
-    <a href="#" id="entry-prev-btn">Previous</a>
-    <a href="#" id="entry-latest-btn">Latest</a>
-    <a href="#" id="entry-random-btn">Random</a>
-    <a href="#" id="entry-next-btn">Previous</a>
+  <div class="btn-toolbar">
+    <div class="btn-group">
+      <a href="#" class="btn btn-large btn-primary" id="entry-prev-btn"><span class="fui-arrow-left"></span></a>
+      <a href="#" class="btn btn-large btn-primary" id="entry-latest-btn">Latest</a>
+      <a href="#" class="btn btn-large btn-primary" id="entry-random-btn">Random</a>
+      <a href="#" class="btn btn-large btn-primary" id="entry-next-btn"><span class="fui-arrow-right"></span></a>
+    </div>
   </div>
   <div id="entry-pad">
   </div>
