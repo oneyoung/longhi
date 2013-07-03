@@ -198,20 +198,67 @@ class AccountTest(BaseTest):
 
 
 class MemoTest(BaseTest):
-    def test_entry_write(self):
-        self.login()
+    def entry_write(self, date, star, text):
         # open the page
         url = self.reverse('memo.views.memo_write')
         self.browser.get(url)
         # we could see form that can fill date, text and whether to star
         element = self.browser.find_element_by_name('date')
-        element.send_keys('2013-01-01')
+        element.send_keys(date)
         element = self.browser.find_element_by_name('text')
-        element.send_keys('This is a test entry.\n haha!\n')
+        element.send_keys(text)
         element = self.browser.find_element_by_name('star')
-        element.click()  # star the entry
+        if star:
+            element.click()  # star the entry
         # then submit
         element = self.browser.find_element_by_name('submit')
         element.click()
+
+    def test_entry_write(self):
+        self.login()
+        url = self.reverse('memo.views.memo_write')
+        self.entry_write('2013-01-01', True, 'This is a test entry.\n haha!\n')
         # we should jump to other page
         self.assertNotEquals(self.browser.current_url, url)
+
+    def test_memo_entry(self):
+        self.login()
+        # first init with some entries
+        entrys = [['2013-06-01', True, 'This a test entry for 0601'],
+                  ['2013-06-05', True, 'This a test entry for 0605'],
+                  ['2013-06-11', True, 'This a test entry for 0611']]
+        for date, star, text in entrys:
+            self.entry_write(date, star, text)
+
+        def click_button_by_id(btn_id):
+            btn = self.browser.find_element_by_id(btn_id)
+            btn.click()
+
+        url = self.reverse('memo.views.memo_entry')
+        prev_btn = 'entry-prev-btn'
+        next_btn = 'entry-next-btn'
+        latest_btn = 'entry-latest-btn'
+        random_btn = 'entry-latest-btn'
+        self.browser.get(url)
+        # after open entry page, we should see the latest entry
+        self.assert_body_contain(entrys[-1][-1])
+
+        # click previous button
+        click_button_by_id(prev_btn)
+        # we should see the newer entry
+        self.assert_body_contain(entrys[-2][-1])
+        # click again
+        click_button_by_id(prev_btn)
+        self.assert_body_contain(entrys[-3][-1])
+
+        # click next button
+        click_button_by_id(next_btn)
+        # we should see the newer entry
+        self.assert_body_contain(entrys[-2][-1])
+
+        # click random
+        click_button_by_id(random_btn)
+
+        # click latest button
+        click_button_by_id(latest_btn)
+        self.assert_body_contain(entrys[-1][-1])
