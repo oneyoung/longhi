@@ -1,1 +1,51 @@
-{% extends 'base.html' %}
+{% extends 'memo/base.html' %}
+
+{% block memo_head %}
+<script type="text/javascript">
+$(window).load(function () {
+  var entryPad = $('#entry-pad')
+
+  function singleMemoQuery(query, value) {
+    var result = memoQuery('single', query, value);
+    if (result) {
+      entryPad.empty();
+      entryPad.append(entryFactory(result[0]));
+    }
+  }
+
+  /* show latest entry first */
+  singleMemoQuery('latest');
+
+  $('#entry-prev-btn').click(function () {
+    singleMemoQuery('prev', unpackEntry(entryPad).date);
+  });
+
+  $('#entry-next-btn').click(function () {
+    singleMemoQuery('next', unpackEntry(entryPad).date);
+  });
+
+  $('#entry-latest-btn').click(function () {
+    singleMemoQuery('latest');
+  });
+
+  $('#entry-random-btn').click(function () {
+    singleMemoQuery('random');
+  });
+
+});
+
+</script>
+{% endblock %}
+
+{% block memo_body %}
+<div>
+  <div>
+    <a href="#" id="entry-prev-btn">Previous</a>
+    <a href="#" id="entry-latest-btn">Latest</a>
+    <a href="#" id="entry-random-btn">Random</a>
+    <a href="#" id="entry-next-btn">Previous</a>
+  </div>
+  <div id="entry-pad">
+  </div>
+</div>
+{% endblock %}

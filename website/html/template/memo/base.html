@@ -91,6 +91,15 @@ function entryFactory(data) {
   return entry;
 }
 
+/* unpackEntry -- unpack entry and return a dict of entry info */
+function unpackEntry(entry) {
+  return {
+    'date': $(entry).find('.entry-date').text(),
+    'star': $(entry).find('.entry-star').text(),
+    'html': $(entry).find('.entry-html').html(),
+  };
+}
+
 function redirect(url) {
   window.location = url;
 }
