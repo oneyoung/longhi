@@ -193,7 +193,8 @@ class EntrysTest(TestCase):
 
         views2test = ['memo.views.memo_io',
                       'memo.views.memo_write',
-                      'memo.views.memo_entry']
+                      'memo.views.memo_entry',
+                      'memo.views.memo_setting', ]
         for view_name in views2test:
             test_view(view_name)
 
@@ -349,3 +350,43 @@ class EntrysTest(TestCase):
         # text test
         single_query('random', text=True)
         batch_query('year', '2013', text=True)
+
+
+class SettingTest(TestCase):
+    def setUp(self):
+        self.user = utils.create_user()
+        self.client.login(username=utils.username, password=utils.password)
+
+    def tearDown(self):
+        self.client.logout()
+        self.user.delete()
+
+    def test_setting_form_submit(self):
+        url = reverse('memo.views.memo_setting')
+        client = self.client
+        user = self.user
+
+        # open setting page
+        resp = client.get(url)
+        self.assertEqual(resp.status_code, 200)
+
+        # fill the form and post
+        form = {
+            'nickname': 'dummyNick',
+            'markdown': True,
+            'timezone': '9.0',
+            'preferhour': 21,
+            'interval': 2,
+            'notify': True,
+        }
+        resp = client.post(url, form)
+        # we should success
+        self.assertEqual(resp.status_code, 200)
+        # now check the datebase
+        setting = user.setting
+        self.assertEquals(form['nickname'], setting.nickname)
+        self.assertEqual(form['markdown'], setting.markdown)
+        self.assertEquals(form['timezone'], setting.timezone)
+        self.assertEqual(form['preferhour'], setting.preferhour)
+        self.assertEqual(form['interval'], setting.interval)
+        self.assertEqual(form['notify'], setting.notify)
