@@ -15,4 +15,5 @@ urlpatterns = patterns(
     url(r'memo/ajax/$', memo.views.memo_ajax),
     url(r'memo/write/$', memo.views.memo_write),
     url(r'memo/entry/$', memo.views.memo_entry),
+    url(r'setting/$', memo.views.memo_setting),
 )

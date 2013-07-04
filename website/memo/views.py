@@ -253,3 +253,8 @@ class WriteView(BaseView):
 @_as_view('memo_entry', login=True)
 class EntryView(BaseView):
     template_name = 'memo/entry.html'
+
+
+@_as_view('memo_setting', login=True)
+class SettingView(BaseView):
+    template_name = 'memo/setting.html'
