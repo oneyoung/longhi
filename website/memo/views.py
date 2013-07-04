@@ -96,7 +96,8 @@ class ImportExportView(BaseView):
             for date, text, star in utils.str2entrys(f.read()):
                 Entry(user=user, date=date, text=text, star=star).save()
         elif action == 'export':
-            buf = ''.join(map(lambda e: utils.entry2str(e), user.entry_set.all()))
+            entries = user.entry_set.all().order_by('date')
+            buf = ''.join(map(lambda e: utils.entry2str(e), entries))
             resp = http.HttpResponse(buf, content_type='text/plain')
             resp['Content-Disposition'] = 'attachment; filename="entrys_export.txt"'
             return resp
