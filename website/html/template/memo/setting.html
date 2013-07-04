@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<form method="post" action="{% url 'memo.views.memo_setting' %}">
+  {% csrf_token %}
+  {{ form }}
+  <input name="submit" type="submit" />
+</form>
+{% endblock %}

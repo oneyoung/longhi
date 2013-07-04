@@ -5,7 +5,7 @@ from django.views.generic.base import View, TemplateView
 from django.shortcuts import redirect
 from django.core.urlresolvers import reverse
 from models import User, Entry
-from forms import RegisterForm
+from forms import RegisterForm, SettingForm
 import utils
 
 
@@ -258,3 +258,15 @@ class EntryView(BaseView):
 @_as_view('memo_setting', login=True)
 class SettingView(BaseView):
     template_name = 'memo/setting.html'
+
+    def get(self, request, *args, **kwargs):
+        setting = request.user.setting
+        form = SettingForm(instance=setting)
+        return self.render_to_response({'form': form})
+
+    def post(self, request, *args, **kwargs):
+        setting = request.user.setting
+        form = SettingForm(request.POST, instance=setting)
+        if form.is_valid():
+            form.save()
+        return self.render_to_response({'form': form})

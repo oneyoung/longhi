@@ -370,23 +370,31 @@ class SettingTest(TestCase):
         resp = client.get(url)
         self.assertEqual(resp.status_code, 200)
 
+        def str2bool(string):
+            return True if string == 'checked' else False
+
+        def get_setting(user):
+            from models import Setting
+            # we need to get a fresh copy
+            return Setting.objects.get(user=user)
+
         # fill the form and post
         form = {
             'nickname': 'dummyNick',
-            'markdown': True,
+            'markdown': 'checked',
             'timezone': '9.0',
             'preferhour': 21,
             'interval': 2,
-            'notify': True,
+            'notify': 'checked',
         }
         resp = client.post(url, form)
         # we should success
         self.assertEqual(resp.status_code, 200)
         # now check the datebase
-        setting = user.setting
+        setting = get_setting(user)
         self.assertEquals(form['nickname'], setting.nickname)
-        self.assertEqual(form['markdown'], setting.markdown)
+        self.assertEqual(str2bool(form['markdown']), setting.markdown)
         self.assertEquals(form['timezone'], setting.timezone)
         self.assertEqual(form['preferhour'], setting.preferhour)
         self.assertEqual(form['interval'], setting.interval)
-        self.assertEqual(form['notify'], setting.notify)
+        self.assertEqual(str2bool(form['notify']), setting.notify)
