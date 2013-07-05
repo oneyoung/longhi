@@ -4,6 +4,7 @@ from django import http
 from django.views.generic.base import View, TemplateView
 from django.shortcuts import redirect
 from django.core.urlresolvers import reverse
+from django.contrib.auth import logout as dj_logout
 from models import User, Entry
 from forms import RegisterForm, SettingForm
 import utils
@@ -78,10 +79,18 @@ def login(request):
 
 
 def logout(request):
-    from django.contrib.auth import logout as dj_logout
     dj_logout(request)
     # redirect to the home page
     return redirect(reverse('memo.views.home'))
+
+
+@_as_view('suicide', login=True)
+class SuicideView(View):
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        dj_logout(request)
+        user.delete()
+        return http.HttpResponseRedirect(reverse('memo.views.home'))
 
 
 @_as_view('memo_io', login=True)
