@@ -81,15 +81,32 @@ class AccountTest(TestCase):
     def test_suicide(self):
         account = self.account
         client = self.client
+        url = reverse('memo.views.suicide')
+
+        def assert_user_exists(status):
+            if status:
+                self.assertTrue(User.objects.filter(username=account['username']).exists())
+            else:
+                self.assertFalse(User.objects.filter(username=account['username']).exists())
+
+        # before login, such request has no effect
+        client.get(url)
+        assert_user_exists(True)
+        client.post(url, {})
+        assert_user_exists(True)
+
         client.login(username=account['username'], password=account['password'])
 
+        # get request did not work too.
+        client.get(url)
+        assert_user_exists(True)
+
         # post request
-        url = reverse('memo.views.suicide')
         resp = client.post(url, {})
         # should redirect to home page
         self.assertRedirects(resp, reverse('memo.views.home'))
         # result: user did not exist any more
-        self.assertFalse(User.objects.filter(username=account['username']).exists())
+        assert_user_exists(False)
 
 
 class EntrysTest(TestCase):
