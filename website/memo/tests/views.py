@@ -3,7 +3,7 @@ from datetime import date, timedelta
 from django.test import TestCase
 from django.core.urlresolvers import reverse
 from memo.utils import str2entrys, str2date, date2str
-from memo.models import Entry
+from memo.models import Entry, User
 import utils
 
 
@@ -77,6 +77,19 @@ class AccountTest(TestCase):
         resp = client.post(reverse('memo.views.logout'))
         self.assertRedirects(resp, reverse('memo.views.home'))
         self.assertNotIn(auth_key, client.session.keys())
+
+    def test_suicide(self):
+        account = self.account
+        client = self.client
+        client.login(username=account['username'], password=account['password'])
+
+        # post request
+        url = reverse('memo.views.suicide')
+        resp = client.post(url, {})
+        # should redirect to home page
+        self.assertRedirects(resp, reverse('memo.views.home'))
+        # result: user did not exist any more
+        self.assertFalse(User.objects.filter(username=account['username']).exists())
 
 
 class EntrysTest(TestCase):
