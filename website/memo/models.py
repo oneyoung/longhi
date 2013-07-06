@@ -82,7 +82,15 @@ class Setting(models.Model):
     )
     timezone = models.CharField(default='8.0', max_length=10, choices=TIME_ZONE_CHOICES)
     preferhour = models.IntegerField(default=20)
-    interval = models.IntegerField(default=1)
+    INTERVAL_CHOICES = (
+        (1, "Every day"),
+        (2, "Every other day"),
+        (3, "Every 3 days"),
+        (5, "Every 5 days"),
+        (7, "Every week"),
+        (15, "Half a month"),
+    )
+    interval = models.IntegerField(default=1, choices=INTERVAL_CHOICES)
     notify = models.BooleanField(default=False)
 
 
