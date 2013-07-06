@@ -130,7 +130,8 @@ class AccountTest(BaseTest):
         views = ['memo.views.home',
                  'memo.views.memo_io',
                  'memo.views.memo_write',
-                 'memo.views.memo_entry', ]
+                 'memo.views.memo_entry',
+                 'memo.views.memo_setting', ]
         for view in views:
             self.browser.get(self.reverse(view))
             self.assert_body_contain(self.nickname)

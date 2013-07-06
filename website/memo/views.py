@@ -28,20 +28,17 @@ def _as_view(name, login=False):
 
 
 class BaseView(TemplateView):
-    def get_context_data(self, **kwargs):
-        context = super(TemplateView, self).get_context_data(**kwargs)
+    def render_to_response(self, context, **kwargs):
         # here we add request context for 'base.html' to
         # determine whether user login
-        context['request'] = self.request
-        return context
+        if not context.get('request'):
+            context['request'] = self.request
+        return super(TemplateView, self).render_to_response(context, **kwargs)
 
 
 @_as_view('home')
 class HomeView(BaseView):
     template_name = 'home.html'
-
-    def get(self, request, *args, **kwargs):
-        return self.render_to_response({'request': request})
 
 
 @_as_view('register')
