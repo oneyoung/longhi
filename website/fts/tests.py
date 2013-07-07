@@ -152,7 +152,9 @@ class AccountTest(BaseTest):
 
         # after registion, we can login now
         self.fill_login_form(username, password)
-        # TODO: successful login should redirect to other page
+        #  successful login should redirect to entry page
+        self.assertEquals(self.browser.current_url,
+                          self.reverse('memo.views.memo_entry'))
 
         # wrong login should say 'didn't match'
         self.fill_login_form(username, 'wrong passowrd')

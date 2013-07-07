@@ -166,3 +166,4 @@ LOGGING = {
 
 # setting for memo app
 LOGIN_URL = '/user/login/'
+LOGIN_REDIRECT_URL = '/memo/entry/'
