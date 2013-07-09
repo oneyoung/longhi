@@ -428,3 +428,19 @@ class SettingTest(TestCase):
         self.assertEqual(form['preferhour'], setting.preferhour)
         self.assertEqual(form['interval'], setting.interval)
         self.assertEqual(str2bool(form['notify']), setting.notify)
+
+
+class MailboxTest(TestCase):
+    def setUp(self):
+        self.url = reverse('mailbox')
+
+    def test_mailbox(self):
+        client = self.client
+        # post a email should response OK
+        mail = utils.read_file('example.email')
+        resp = client.post(self.url, {'mail': mail})
+        self.assertEqual(resp.status_code, 200)
+
+        # GET request to this url should forbidden
+        resp = client.get(self.url)
+        self.assertNotEqual(resp.status_code, 200)

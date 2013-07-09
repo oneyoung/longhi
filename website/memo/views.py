@@ -277,3 +277,10 @@ class SettingView(BaseView):
         if form.is_valid():
             form.save()
         return self.render_to_response({'form': form})
+
+
+def mailbox(request):
+    if request.method == "POST":
+        return http.HttpResponse('OK')
+    else:
+        return http.HttpResponseNotAllowed('Method %s Not Support' % request.method)
