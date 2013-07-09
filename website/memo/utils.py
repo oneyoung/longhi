@@ -1,4 +1,5 @@
 import datetime
+import os
 
 
 def str2date(string):
@@ -43,3 +44,7 @@ def entry2str(entry):
         'star': ' *' if entry.star else '',
         'text': entry.text,
     }
+
+
+def gen_keys():
+    return os.urandom(16).encode('hex')

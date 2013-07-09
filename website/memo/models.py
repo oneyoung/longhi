@@ -94,6 +94,12 @@ class Setting(models.Model):
     notify = models.BooleanField(default=False)
 
 
+class EmailEntry(models.Model):
+    keys = models.CharField(max_length=256, unique=True)
+    date = models.DateField()
+    user = models.ForeignKey(User)
+
+
 # signals here
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
