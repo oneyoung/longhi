@@ -1,5 +1,6 @@
 import datetime
 import os
+import django.core.exceptions as e
 
 
 def str2date(string):
@@ -48,3 +49,17 @@ def entry2str(entry):
 
 def gen_keys():
     return os.urandom(16).encode('hex')
+
+
+def alloc_email_entry(user, date):
+    from models import EmailEntry
+    ee = EmailEntry(user=user, date=date)
+    while 1:
+        ee.keys = gen_keys()
+        try:
+            ee.validate_unique()
+            break
+        except e.ValidationError:
+            continue
+    ee.save()
+    return ee

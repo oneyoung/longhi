@@ -1,5 +1,6 @@
 from datetime import date, timedelta
-from memo.models import User, Statics, Setting
+from memo.models import User, Statics, Setting, EmailEntry
+from memo.utils import alloc_email_entry
 from django.test import TestCase
 from django.core import exceptions
 import utils
@@ -112,3 +113,27 @@ class StaticsTest(TestCase):
             start_date += timedelta(step)
             create_entry(start_date)
         statics_equal(15, 10, 10)
+
+
+class EmailEntryTest(TestCase):
+    def setUp(self):
+        self.user = utils.create_user()
+
+    def tearDown(self):
+        self.user.delete()
+
+    def test_emailentry(self):
+        user = self.user
+        today = date.today()
+        # unique test
+        keys = '1234556789'
+        e1 = EmailEntry(user=user, date=today, keys=keys)
+        e1.save()
+        # the same keys should raise excpetion
+        e2 = EmailEntry(user=user, date=today, keys=keys)
+        with self.assertRaises(Exception):
+            e2.save()
+
+        # test utils.alloc_email_entry
+        for i in range(10):
+            alloc_email_entry(user, today)
