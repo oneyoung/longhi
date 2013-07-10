@@ -1,0 +1,37 @@
+                                                                                                                                                                                                                                                               
+MIME-Version: 1.0
+Received: by 10.64.240.47 with HTTP; Tue, 9 Jul 2013 23:04:43 -0700 (PDT)
+In-Reply-To: <CAESLrjSWbdymCGYTvocDNQxLAwX6Ae198yR0gwQRB=B9WSum+Q@mail.gmail.com>
+References: <CAESLrjSWbdymCGYTvocDNQxLAwX6Ae198yR0gwQRB=B9WSum+Q@mail.gmail.com>
+Date: Wed, 10 Jul 2013 14:04:43 +0800
+Delivered-To: guowangyang@gmail.com
+Message-ID: <CAESLrjQL4ceHXbf_r_Om+fVNCQyTvC5si9-xjGvYr9NNVjvydw@mail.gmail.com>
+Subject: Re: Email test
+From: Wayne Guo <test@test.com>
+To: wangyang guo <guowangyang@gmail.com>
+Content-Type: multipart/alternative; boundary=047d7b5d8debcdae1704e1220db1
+
+--047d7b5d8debcdae1704e1220db1
+Content-Type: text/plain; charset=ISO-8859-1
+
+Reply to this email
+
+
+2013/7/10 Wayne Guo <guowangyang@gmail.com>
+
+> This is a email test for python module.
+>
+> balabala....
+>
+> END
+>
+
+--047d7b5d8debcdae1704e1220db1
+Content-Type: text/html; charset=ISO-8859-1
+
+<div dir="ltr">Reply to this email</div><div class="gmail_extra"><br><br><div class="gmail_quote">2013/7/10 Wayne Guo <span dir="ltr">&lt;<a href="mailto:guowangyang@gmail.com" target="_blank">guowangyang@gmail.com</a>&gt;</span><br>
+<blockquote class="gmail_quote" style="margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex"><div dir="ltr">This is a email test for python module.<div><br></div><div>balabala....</div><div><br></div><div>END</div>
+</div>
+</blockquote></div><br></div>
+
+--047d7b5d8debcdae1704e1220db1--
