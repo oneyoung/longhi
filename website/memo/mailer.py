@@ -1,4 +1,3 @@
-import re
 import email
 import os
 import django.core.exceptions as e
@@ -33,10 +32,8 @@ def get_email_addr(string):
     >>> get_email_addr('XXX <xxx@xxx.com>')
     'xxx@xxx.com'
     '''
-    regexp = re.compile('(.*<)?(?P<email>.+@\S+\.\w+)>?')
-    m = regexp.match(string)
-    if m:
-        return m.group('email')
+    name, addr = email.utils.parseaddr(string)
+    return addr
 
 
 def message_ID_pack(keys):
