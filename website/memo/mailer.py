@@ -74,18 +74,27 @@ def handle_replied_email(mail):
     ee.delete()  # delete email entry once we had handled
 
 
+def composite_email(headers, text, html=''):
+    message = email.message.Message()
+    for key, value in headers.items():
+        message.add_header(key, value)
+    # add From field
+    message.add_header('From', EMAIL_ADDRESS)
+    return message
+
+
 def notify_email(email_entry):
     ''' generate email for notify.
         sending job is not done here, just merely composite
         return a email.message object
     '''
-    message = email.message.Message()
-    message.add_header('Message-ID', message_ID_pack(email_entry.keys))
-    message.add_header('To', email_entry.user.username)
-    message.add_header('From', EMAIL_ADDRESS)
     subject = 'Hi %(nickname)s, it\'s %(date)s. How is your day?' % {
         'nickname': email_entry.user.setting.nickname,
         'date': '%s %d' % (email_entry.date.strftime('%b'), email_entry.date.day),
     }
-    message.add_header('Subject', subject)
-    return message
+    headers = {
+        'To': email_entry.user.username,
+        'Message-ID': message_ID_pack(email_entry.keys),
+        'Subject': subject,
+    }
+    return composite_email(headers, text='')
