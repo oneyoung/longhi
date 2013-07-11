@@ -71,12 +71,23 @@ def handle_replied_email(mail):
     ee.delete()  # delete email entry once we had handled
 
 
-def composite_email(headers, text, html=''):
-    message = email.message.Message()
+def composite_email(headers, html=''):
+    from email.mime.multipart import MIMEMultipart
+    from email.mime.text import MIMEText
+
+    message = MIMEMultipart('alternative')
     for key, value in headers.items():
         message.add_header(key, value)
     # add From field
     message.add_header('From', EMAIL_ADDRESS)
+    # add content here
+    if html:
+        from bs4 import BeautifulSoup
+        text = BeautifulSoup(html).get_text()
+        text_part = MIMEText(text, 'plain')
+        html_part = MIMEText(html, 'html')
+        message.attach(html_part)
+        message.attach(text_part)
     return message
 
 
@@ -94,4 +105,4 @@ def notify_email(email_entry):
         'Message-ID': message_ID_pack(email_entry.keys),
         'Subject': subject,
     }
-    return composite_email(headers, text='')
+    return composite_email(headers, html='')
