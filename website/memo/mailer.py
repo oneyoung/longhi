@@ -19,7 +19,14 @@ def get_email_addr(string):
 
 def handle_replied_email(mail):
     def get_reply_message(message):
-        return message
+        from email_reply_parser import EmailReplyParser
+
+        for payload in message.get_payload():
+            if payload.get_content_type() == 'text/plain':
+                content = payload.get_payload()
+                break
+
+        return EmailReplyParser.parse_reply(content)
 
     msg = email.message_from_string(mail)
     username = get_email_addr(msg.get('From'))
