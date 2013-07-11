@@ -92,6 +92,7 @@ class Setting(models.Model):
     )
     interval = models.IntegerField(default=1, choices=INTERVAL_CHOICES)
     notify = models.BooleanField(default=False)
+    attach = models.BooleanField(default=False)  # attach an old entry when send email
 
 
 class EmailEntry(models.Model):

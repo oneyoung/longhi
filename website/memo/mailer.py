@@ -96,6 +96,23 @@ def notify_email(email_entry):
         sending job is not done here, just merely composite
         return a email.message object
     '''
+    def content(user):
+        ''' get content of email as string'''
+        from django.template.loader import render_to_string
+        context = {}
+        if user.setting.attach:  # user has such setting
+            entrys = user.entry_set.all()
+            size = len(entrys)
+            if size:
+                import random
+                import date
+                index = random.randrange(0, size)
+                entry = entrys[index]
+                delta = date.today() - entry.date
+                context['entry'] = entry
+                context['days'] = delta.days
+        return render_to_string('email/notify.html', context)
+
     subject = 'Hi %(nickname)s, it\'s %(date)s. How is your day?' % {
         'nickname': email_entry.user.setting.nickname,
         'date': '%s %d' % (email_entry.date.strftime('%b'), email_entry.date.day),
@@ -105,4 +122,4 @@ def notify_email(email_entry):
         'Message-ID': message_ID_pack(email_entry.keys),
         'Subject': subject,
     }
-    return composite_email(headers, html='')
+    return composite_email(headers, html=content(email_entry.user))
