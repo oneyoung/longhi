@@ -1,7 +1,27 @@
 import re
 import email
+import os
+import django.core.exceptions as e
 from django.conf import settings
 from models import EmailEntry, Entry
+
+
+def gen_keys():
+    return os.urandom(16).encode('hex')
+
+
+def alloc_email_entry(user, date):
+    from models import EmailEntry
+    ee = EmailEntry(user=user, date=date)
+    while 1:
+        ee.keys = gen_keys()
+        try:
+            ee.validate_unique()
+            break
+        except e.ValidationError:
+            continue
+    ee.save()
+    return ee
 
 
 def get_email_addr(string):
@@ -51,3 +71,11 @@ def handle_replied_email(mail):
     entry.text = get_reply_message(msg)
     entry.save()  # save entry
     ee.delete()  # delete email entry once we had handled
+
+
+def notify_email(email_entry):
+    ''' generate email for notify.
+        sending job is not done here, just merely composite
+        return a email.message object
+    '''
+    pass
