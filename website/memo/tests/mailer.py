@@ -44,3 +44,23 @@ class MailerTest(TestCase):
         # unpack test
         keys2 = mailer.message_ID_extract(msgid)
         self.assertEquals(keys, keys2)
+
+    def test_notify_email(self):
+        nickname = "dummynick"
+        self.user.setting.nickname = nickname
+        d = date(2013, 6, 19)
+        ee = mailer.alloc_email_entry(self.user, d)
+
+        message = mailer.notify_email(ee)
+        # message is a email.message object, let's exam the result
+        # * should contain the message ID
+        self.assertIn(ee.keys, message.get('Message-ID'))
+        # * should send to the user
+        self.assertEquals(ee.user.username, message.get('To'))
+        # should have the from
+        self.assertTrue(message.get('From'))
+        # Subject check
+        subject = message.get('Subject')
+        self.assertIn('Hi %s' % nickname, subject)  # have nickname
+        self.assertIn('Jun 19', subject)  # have date
+        # TODO content check
