@@ -168,3 +168,14 @@ LOGGING = {
 # setting for memo app
 LOGIN_URL = '/user/login/'
 LOGIN_REDIRECT_URL = '/memo/entry/'
+
+# email setting
+EMAIL_SEND_HOST = 'localhost'
+EMAIL_SEND_PORT = 8825
+EMAIL_RECV_HOST = 'localhost'
+EMAIL_RECV_PORT = 8823
+
+EMAIL_HOST = EMAIL_SEND_HOST
+EMAIL_PORT = EMAIL_SEND_PORT
+EMAIL_HOST_USER = 'dummyuser'
+EMAIL_HOST_PASSWORD = 'dummypassword'
