@@ -1,5 +1,6 @@
 import re
 import email
+from django.conf import settings
 from models import EmailEntry, Entry
 
 
@@ -17,6 +18,17 @@ def get_email_addr(string):
         return m.group('email')
 
 
+def message_ID_pack(keys):
+    ''' message-id = "<" local-part "@" domain ">" '''
+    domain = settings.EMAIL_HOST
+    return "<%s@%s>" % (keys, domain)
+
+
+def message_ID_extract(msgid):
+    ''' message id unpack '''
+    return msgid.split('@')[0].strip('<')
+
+
 def handle_replied_email(mail):
     def get_reply_message(message):
         from email_reply_parser import EmailReplyParser
@@ -30,7 +42,7 @@ def handle_replied_email(mail):
 
     msg = email.message_from_string(mail)
     username = get_email_addr(msg.get('From'))
-    keys = msg.get('In-Reply-To')
+    keys = message_ID_extract(msg.get('In-Reply-To'))
     ee = EmailEntry.objects.get(keys=keys)
     if username != ee.user.username:
         # email address not match, just return
