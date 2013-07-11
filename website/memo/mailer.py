@@ -5,13 +5,14 @@ import django.core.exceptions as e
 from django.conf import settings
 from models import EmailEntry, Entry
 
+EMAIL_ADDRESS = 'postman@%s' % settings.EMAIL_HOST
+
 
 def gen_keys():
     return os.urandom(16).encode('hex')
 
 
 def alloc_email_entry(user, date):
-    from models import EmailEntry
     ee = EmailEntry(user=user, date=date)
     while 1:
         ee.keys = gen_keys()
@@ -78,4 +79,13 @@ def notify_email(email_entry):
         sending job is not done here, just merely composite
         return a email.message object
     '''
-    pass
+    message = email.message.Message()
+    message.add_header('Message-ID', message_ID_pack(email_entry.keys))
+    message.add_header('To', email_entry.user.username)
+    message.add_header('From', EMAIL_ADDRESS)
+    subject = 'Hi %(nickname)s, it\'s %(date)s. How is your day?' % {
+        'nickname': email_entry.user.setting.nickname,
+        'date': '%s %d' % (email_entry.date.strftime('%b'), email_entry.date.day),
+    }
+    message.add_header('Subject', subject)
+    return message

@@ -48,7 +48,7 @@ class MailerTest(TestCase):
     def test_notify_email(self):
         nickname = "dummynick"
         self.user.setting.nickname = nickname
-        d = date(2013, 6, 19)
+        d = date(2013, 6, 9)
         ee = mailer.alloc_email_entry(self.user, d)
 
         message = mailer.notify_email(ee)
@@ -62,5 +62,5 @@ class MailerTest(TestCase):
         # Subject check
         subject = message.get('Subject')
         self.assertIn('Hi %s' % nickname, subject)  # have nickname
-        self.assertIn('Jun 19', subject)  # have date
+        self.assertIn('Jun 9', subject)  # have date, and should strip heading 0
         # TODO content check
