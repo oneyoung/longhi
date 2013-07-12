@@ -1,25 +1,14 @@
 import email
-import os
-import django.core.exceptions as e
 from django.conf import settings
 from models import EmailEntry, Entry
+import utils
 
 EMAIL_ADDRESS = 'postman@%s' % settings.EMAIL_HOST
 
 
-def gen_keys():
-    return os.urandom(16).encode('hex')
-
-
 def alloc_email_entry(user, date):
     ee = EmailEntry(user=user, date=date)
-    while 1:
-        ee.keys = gen_keys()
-        try:
-            ee.validate_unique()
-            break
-        except e.ValidationError:
-            continue
+    utils.alloc_keys(ee, 'keys')
     ee.save()
     return ee
 

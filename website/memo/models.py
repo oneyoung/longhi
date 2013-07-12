@@ -93,6 +93,9 @@ class Setting(models.Model):
     interval = models.IntegerField(default=1, choices=INTERVAL_CHOICES)
     notify = models.BooleanField(default=False)
     attach = models.BooleanField(default=False)  # attach an old entry when send email
+    # keys for unsubscribe
+    keys = models.CharField(max_length=256, blank=True, null=True)
+    #keys = prop_wrap('_keys')
 
 
 class EmailEntry(models.Model):
@@ -102,7 +105,7 @@ class EmailEntry(models.Model):
 
 
 # signals here
-from django.db.models.signals import post_save, pre_save
+from django.db.models.signals import post_save, pre_save, post_init
 from django.dispatch import receiver
 
 
@@ -147,3 +150,13 @@ def entry_created_hook(sender, instance, created, **kwargs):
             statics.record = statics.streak
         statics.last_update = entry.date
         statics.save()
+
+
+@receiver(post_init, sender=Setting)
+def setting_init_hook(sender, instance, **kwargs):
+    import utils
+    while 1:
+        keys = utils.gen_keys()
+        if not Setting.objects.filter(keys=keys).exists():
+            instance.keys = keys
+            break

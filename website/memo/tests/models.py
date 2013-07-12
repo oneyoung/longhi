@@ -21,6 +21,7 @@ class UserTest(TestCase):
         # can access Setting
         setting_pk = user.setting.pk
         self.assertIsInstance(user.setting, Setting)
+        self.assertTrue(user.setting.keys)  # keys should not null
         # can access Entry set
         user.entry_set.all()
 

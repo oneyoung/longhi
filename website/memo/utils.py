@@ -1,4 +1,6 @@
 import datetime
+import os
+import django.core.exceptions as e
 
 
 def str2date(string):
@@ -43,3 +45,26 @@ def entry2str(entry):
         'star': ' *' if entry.star else '',
         'text': entry.text,
     }
+
+
+def gen_keys():
+    return os.urandom(16).encode('hex')
+
+
+def alloc_keys(model, attr):
+    ''' a shortcut to alloc unique keys
+    paras:
+        model -- a model.Model instance
+        attr -- attribute name for keys
+    return:
+        instance of model
+    '''
+    while 1:
+        setattr(model, attr, gen_keys())
+        try:
+            model.validate_unique()
+            break
+        except e.ValidationError:
+            print "validator error"
+            continue
+    return model
