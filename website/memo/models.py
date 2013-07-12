@@ -95,7 +95,6 @@ class Setting(models.Model):
     attach = models.BooleanField(default=False)  # attach an old entry when send email
     # keys for unsubscribe
     keys = models.CharField(max_length=256, blank=True, null=True)
-    #keys = prop_wrap('_keys')
 
 
 class EmailEntry(models.Model):
@@ -155,8 +154,9 @@ def entry_created_hook(sender, instance, created, **kwargs):
 @receiver(post_init, sender=Setting)
 def setting_init_hook(sender, instance, **kwargs):
     import utils
-    while 1:
-        keys = utils.gen_keys()
-        if not Setting.objects.filter(keys=keys).exists():
-            instance.keys = keys
-            break
+    if not instance.keys:
+        while 1:
+            keys = utils.gen_keys()
+            if not Setting.objects.filter(keys=keys).exists():
+                instance.keys = keys
+                break

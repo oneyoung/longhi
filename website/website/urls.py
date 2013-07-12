@@ -17,5 +17,6 @@ urlpatterns = patterns(
     url(r'memo/write/$', memo.views.memo_write),
     url(r'memo/entry/$', memo.views.memo_entry),
     url(r'setting/$', memo.views.memo_setting),
+    url(r'setting/unsubscribe/$', memo.views.unsubscribe),
     url(r'mailbox/$', memo.views.mailbox, name='mailbox'),
 )

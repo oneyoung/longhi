@@ -5,7 +5,8 @@ from django.views.generic.base import View, TemplateView
 from django.shortcuts import redirect
 from django.core.urlresolvers import reverse
 from django.contrib.auth import logout as dj_logout
-from models import User, Entry
+from django.core import exceptions
+from models import User, Entry, Setting
 from forms import RegisterForm, SettingForm
 import utils
 
@@ -277,6 +278,20 @@ class SettingView(BaseView):
         if form.is_valid():
             form.save()
         return self.render_to_response({'form': form})
+
+
+def unsubscribe(request):
+    if request.method == "GET":
+        keys = request.GET.get('keys')
+        try:
+            s = Setting.objects.get(keys=keys)
+            s.notify = False
+            s.save()
+            return http.HttpResponse('Unsubscribe success')
+        except exceptions.ObjectDoesNotExist:
+            return http.HttpResponseNotFound('Not found')
+    else:
+        return http.HttpResponseBadRequest('Bad Request')
 
 
 def mailbox(request):
