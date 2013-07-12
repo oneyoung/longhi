@@ -2,7 +2,7 @@
 
 {% if entry %}
 <div>
-  <p>Do you memeber? {{ days }} ago ({{ entry.date|date 'c' }}) you wrote:</p>
+  <p>Do you memeber? {{ days }} days ago ({{ entry.date|date:'Y/m/d' }}) you wrote:</p>
 <div>{{ entry.html|safe }}</div>
 </div>
 {% endif %}

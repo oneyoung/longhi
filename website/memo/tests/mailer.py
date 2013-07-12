@@ -63,4 +63,13 @@ class MailerTest(TestCase):
         subject = message.get('Subject')
         self.assertIn('Hi %s' % nickname, subject)  # have nickname
         self.assertIn('Jun 9', subject)  # have date, and should strip heading 0
-        # TODO content check
+        # content check
+        self.assertIn('Just reply', message.as_string())
+
+        # attach test
+        self.user.setting.attach = True
+        self.user.setting.save()
+        text = "Entry tesst haha"
+        utils.create_entry(d, self.user, text=text)
+        message = mailer.notify_email(ee)
+        self.assertIn(text, message.as_string())

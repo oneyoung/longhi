@@ -105,7 +105,7 @@ def notify_email(email_entry):
             size = len(entrys)
             if size:
                 import random
-                import date
+                from datetime import date
                 index = random.randrange(0, size)
                 entry = entrys[index]
                 delta = date.today() - entry.date
