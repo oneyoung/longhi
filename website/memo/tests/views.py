@@ -7,6 +7,12 @@ from memo.models import Entry, User
 import utils
 
 
+def get_setting(user):
+    from models import Setting
+    # we need to get a fresh copy
+    return Setting.objects.get(user=user)
+
+
 class HomeTest(TestCase):
     def test_home_access(self):
         response = self.client.get(reverse('memo.views.home'))
@@ -403,11 +409,6 @@ class SettingTest(TestCase):
         def str2bool(string):
             return True if string == 'checked' else False
 
-        def get_setting(user):
-            from models import Setting
-            # we need to get a fresh copy
-            return Setting.objects.get(user=user)
-
         # fill the form and post
         form = {
             'nickname': 'dummyNick',
@@ -428,6 +429,25 @@ class SettingTest(TestCase):
         self.assertEqual(form['preferhour'], setting.preferhour)
         self.assertEqual(form['interval'], setting.interval)
         self.assertEqual(str2bool(form['notify']), setting.notify)
+
+    def test_unsubscribe(self):
+        setting = get_setting(self.user)
+        keys = self.user.setting.keys
+        # turn on notify
+        setting.notify = True
+        setting.save()
+
+        urlbase = reverse('memo.views.unsubscribe')
+        url = urlbase + '?keys=%s' % keys
+        client = self.client
+
+        # test begin, a get request should clear setting.notify field
+        resp = client.get(url)
+        self.assertEqual(resp.status_code, 200)  # response OK
+        # should say we unsbuscribe successfully
+        self.assertIn('Unsubscribe success', resp.content)
+        # valid the setting result
+        self.assertFalse(get_setting(self.user).notify)
 
 
 class MailboxTest(TestCase):
