@@ -32,3 +32,19 @@ html, body {
 	background: yellow;
 	height: 60px;
 }
+
+/* for user page */
+#content .login {
+	background: none;
+	//background-size: 940px 778px;
+	color: #ffffff;
+	margin-bottom: 0;
+	padding: 38px 38px 267px;
+	position: relative;
+}
+
+#content .login-screen {
+	background-color: #1abc9c;
+	min-height: 317px;
+	padding: 123px 220px 33px 306px;
+}

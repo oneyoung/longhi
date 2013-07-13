@@ -39,11 +39,10 @@
       </div>
     </div>
   </div>
-  <div id="content">Content</div>
+  <div id="content">{% block body %}{% endblock %}</div>
   <div id="footer">Footer</div>
 </div>
-  {% block body %}{% endblock %}
-  <!-- Load JS here for greater good -->
+    <!-- Load JS here for greater good -->
   <!-- Flat-UI js -->
   <script src="{% static 'flatui/js/jquery-ui-1.10.3.custom.min.js' %}"></script>
   <script src="{% static 'flatui/js/jquery.ui.touch-punch.min.js' %}"></script>
