@@ -1,0 +1,24 @@
+html, body {
+	margin: 0;
+	padding: 0;
+}
+
+#page-container {
+	background: red;
+	margin: auto;
+	width: 960px;
+}
+
+#header-nav {
+	background: green;
+	height: 50px;
+}
+
+#content {
+	background: blue;
+}
+
+#footer {
+	background: yellow;
+	height: 60px;
+}

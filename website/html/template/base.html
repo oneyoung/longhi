@@ -4,6 +4,7 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
+  <link href="{% static 'default.css' %}" rel="stylesheet">
   <!-- Loading Bootstrap & Flat-UI -->
   <link href="{% static 'flatui/bootstrap/css/bootstrap.css' %}" rel="stylesheet">
   <link href="{% static 'flatui/css/flat-ui.css' %}" rel="stylesheet">
@@ -14,6 +15,11 @@
 </head>
 
 <body>
+<div id="page-container">
+  <div id="header-nav">Header</div>
+  <div id="content">Content</div>
+  <div id="footer">Footer</div>
+</div>
   <!-- nav bar -->
   <div class="navbar navbar-inverse">
     <div class="navbar navbar-inner">
