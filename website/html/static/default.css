@@ -11,7 +11,17 @@ html, body {
 
 #header-nav {
 	background: green;
-	height: 50px;
+	height: 54px;
+}
+
+#header-nav .nav {
+	float: right;
+}
+
+#header-nav h1 {
+	margin-left: 10px;
+	float: left;
+	color: white;
 }
 
 #content {
