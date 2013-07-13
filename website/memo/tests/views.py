@@ -449,6 +449,22 @@ class SettingTest(TestCase):
         # valid the setting result
         self.assertFalse(get_setting(self.user).notify)
 
+    def test_email_validation(self):
+        setting = get_setting(self.user)
+        # for a new user, this field should be false
+        self.assertFalse(setting.validated)
+        keys = self.user.setting.keys
+
+        urlbase = reverse('memo.views.activate')
+        url = urlbase + '?keys=%s' % keys
+        client = self.client
+
+        # open this url should activate the account
+        resp = client.get(url)
+        self.assertEqual(resp.status_code, 200)  # response OK
+        # after that, field should be set to True
+        self.assertTrue(get_setting(self.user).validated)
+
 
 class MailboxTest(TestCase):
     def setUp(self):
