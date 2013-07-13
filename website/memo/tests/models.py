@@ -65,7 +65,8 @@ class EntryTest(TestCase):
 
         entry_date = date.today()
         # by default, markdown is not enabled
-        create_entry(entry_date, text, text)
+        # so when convert to html, it will add <p> tag
+        create_entry(entry_date, 'pppp', '<p>pppp</p>')
 
         # turn on markdown trigger
         user.setting.markdown = True

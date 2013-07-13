@@ -127,7 +127,11 @@ def entry_save_hook(sender, instance, **kwargs):
                                tab_length=4)
         entry.html = md.convert(entry.text)
     else:
-        entry.html = entry.text
+        import xml.sax.saxutils
+        # we need to escape user input first to make sure html safe
+        text = xml.sax.saxutils.escape(entry.text)
+        # need to add <p> in every paragraph
+        entry.html = '\n'.join(map(lambda l: '<p>%s</p>' % l, text.split('\n')))
 
 
 @receiver(post_save, sender=Entry)
