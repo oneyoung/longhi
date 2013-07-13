@@ -95,6 +95,7 @@ class Setting(models.Model):
     attach = models.BooleanField(default=False)  # attach an old entry when send email
     # keys for unsubscribe
     keys = models.CharField(max_length=256, blank=True, null=True)
+    validated = models.BooleanField(default=False)  # email validation
 
 
 class EmailEntry(models.Model):

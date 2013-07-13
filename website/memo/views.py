@@ -294,6 +294,21 @@ def unsubscribe(request):
         return http.HttpResponseBadRequest('Bad Request')
 
 
+def activate(request):
+    if request.method == "GET":
+        keys = request.GET.get('keys')
+        try:
+            s = Setting.objects.get(keys=keys)
+            s.validated = True
+            s.save()
+            # TODO: should we response a template?
+            return http.HttpResponse('Your Email account has been activated.')
+        except exceptions.ObjectDoesNotExist:
+            return http.HttpResponseNotFound('Not found')
+    else:
+        return http.HttpResponseBadRequest('Bad Request')
+
+
 def mailbox(request):
     if request.method == "POST":
         return http.HttpResponse('OK')
