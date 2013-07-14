@@ -107,7 +107,14 @@ function redirect(url) {
 $(window).load(function () {
   $('#content').delegate('.star-btn', 'click', function () {
     var checkbox = $(this).prev('input:checkbox');
-    checkbox.prop('checked', !checkbox.prop('checked'));
+    var nextState = !checkbox.prop('checked');
+    var data = {
+      'date': unpackEntry($(this).parents('.entry')).date,
+      'star': nextState,
+    };
+    memoAjax('POST', data, function () {
+      checkbox.prop('checked', nextState);
+    });
   });
 });
 
