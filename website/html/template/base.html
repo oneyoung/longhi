@@ -27,7 +27,7 @@
           <li><a href="{% url 'memo.views.memo_entry' %}">Entry</a></li>
           <li><a href="{% url 'memo.views.memo_write' %}">Write</a></li>
           <li>
-            <a href="#"><h4><small>Hi </small>{{ request.user.setting.nickname }}</h4></a>
+            <a href="#"><span class="fui-user"><span class="nickname"> {{ request.user.setting.nickname }}</span></span></a>
             <ul>
               <li><a id="settings" href="{% url 'memo.views.memo_setting' %}">Settings</a></li>
               <li><a id="logout" href="{% url 'memo.views.logout' %}">Logout</a></li>

@@ -4,7 +4,6 @@ html, body {
 }
 
 body {
-	text-align: center;
 }
 
 #page-container {
@@ -13,9 +12,9 @@ body {
 	width: 960px;
 }
 
+/* nav bar */
 #header-nav {
 	background: green;
-	height: 54px;
 }
 
 #header-nav .nav {
@@ -28,9 +27,14 @@ body {
 	color: white;
 }
 
+.nickname {
+	color: #F1C40F;
+}
+
 #content {
 	background: #BDC3C7;
 	margin: auto;
+	text-align: center;
 }
 
 #footer {
