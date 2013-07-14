@@ -3,6 +3,10 @@ html, body {
 	padding: 0;
 }
 
+body {
+	text-align: center;
+}
+
 #page-container {
 	background: red;
 	margin: auto;
@@ -25,7 +29,8 @@ html, body {
 }
 
 #content {
-	background: blue;
+	background: #BDC3C7;
+	margin: auto;
 }
 
 #footer {
@@ -47,4 +52,42 @@ html, body {
 	background-color: #1abc9c;
 	min-height: 317px;
 	padding: 123px 220px 33px 306px;
+}
+
+/* memo */
+#btn-toolbar {
+	margin-top: 40px;
+	margin-bottom: 0;
+}
+
+#entry-pad {
+	margin: 10px;
+	padding: 30px;
+}
+
+.entry {
+	background: white;
+	border-radius: 10px;
+	border-width: 3px;
+	padding-top: 38px;
+	padding-bottom: 21px;
+	padding-left: 40px;
+	padding-right: 40px;
+	position: relative;
+}
+
+.entry-date {
+	color: #C0392B;
+	border: none;
+}
+
+.entry-html {
+	font-size: 1.75em;
+	line-height: 1.5em;
+	margin-top: 20px;
+	text-align: left;
+}
+
+.entry-html p {
+	margin: 0 0 1.2em;
 }

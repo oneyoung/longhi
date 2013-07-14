@@ -24,6 +24,8 @@
         <ul class="nav">
           <li></li>
         {% if request.user.is_authenticated %}
+          <li><a href="{% url 'memo.views.memo_entry' %}">Entry</a></li>
+          <li><a href="{% url 'memo.views.memo_write' %}">Write</a></li>
           <li>
             <a href="#"><h4><small>Hi </small>{{ request.user.setting.nickname }}</h4></a>
             <ul>
