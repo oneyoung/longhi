@@ -6,7 +6,7 @@ function submitEntry(form) {
   var reqs = {
     'date': $(form).find('input[name="date"]').val(),
     'star': $(form).find('input[name="star"]').attr("checked") == "checked",
-    'text': $(form).find('input[name="text"]').val(),
+    'text': $(form).find('textarea[name="text"]').val(),
   };
 
   memoAjax('POST', reqs, function (data) {
@@ -30,9 +30,9 @@ $(window).load(function () {
 {% block memo_body %}
 <div class="entry-form">
   {% csrf_token %}
-  <input name="date" type="text" />
-  <input name="star" type="checkbox" />
-  <input name="text" type="textarea" />
-  <input name="submit" type="submit" />
+  <div><input name="date" type="text" /></div>
+  <div><input name="star" type="checkbox" /></div>
+  <div><textarea name="text" rows=20 placeholder="Write down your entry here."></textarea></div>
+  <div><input name="submit" type="submit" /></div>
 </div>
 {% endblock %}
