@@ -85,6 +85,19 @@ body {
 	border: none;
 }
 
+.entry-star input {
+	display: none;
+}
+
+.entry-star .star-btn {
+	color: #95A5A6;
+	font-size: x-large;
+}
+
+.entry-star input:checked + .star-btn {
+	color: #C0392B;
+}
+
 .entry-html {
 	font-size: 1.75em;
 	line-height: 1.5em;

@@ -85,7 +85,7 @@ function entryFactory(data) {
   entry.css('display', '');
 
   entry.find('.entry-date').text(data.date);
-  entry.find('.entry-star').text(data.star);
+  entry.find('.entry-star input:checkbox').prop('checked', data.star);
   entry.find('.entry-html').html(data.html);
 
   return entry;
@@ -95,7 +95,7 @@ function entryFactory(data) {
 function unpackEntry(entry) {
   return {
     'date': $(entry).find('.entry-date').text(),
-    'star': $(entry).find('.entry-star').text(),
+    'star': $(entry).find('.entry-star input:checkbox').prop('checked'),
     'html': $(entry).find('.entry-html').html(),
   };
 }
@@ -103,6 +103,13 @@ function unpackEntry(entry) {
 function redirect(url) {
   window.location = url;
 }
+
+$(window).load(function () {
+  $('#content').delegate('.star-btn', 'click', function () {
+    var checkbox = $(this).prev('input:checkbox');
+    checkbox.prop('checked', !checkbox.prop('checked'));
+  });
+});
 
 </script>
 
@@ -113,7 +120,10 @@ function redirect(url) {
 <!-- entry template -->
 <div id="entry-tpl" class="entry" style="display:none">
   <h2><div class="entry-date"></div></h2>
-  <div class="entry-star"></div>
+  <div class="entry-star">
+    <input type="checkbox" /><a class="star-btn" href="#"><span class="fui-heart"></span></a>
+  </div>
+  <hr />
   <div class="entry-html"></div>
 </div>
 {% block memo_body %}{% endblock %}
