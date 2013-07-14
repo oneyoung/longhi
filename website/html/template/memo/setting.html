@@ -1,42 +1,41 @@
 {% extends 'base.html' %}
 
 {% block body %}
-<form method="post" action="{% url 'memo.views.memo_setting' %}">
+<form class="setting-form" method="post" action="{% url 'memo.views.memo_setting' %}">
   {% csrf_token %}
   <div class="control-group">
     <input name="nickname" type="text" value="{{ form.nickname.value }}"/>
+    <label>Nickname</label>
   </div>
   <div class="control-group">
-    <label>Markdown</label>
     <input name="markdown" type="checkbox" data-toggle="switch" {% if form.markdown.value %}checked{% endif %} />
+    <label>Markdown</label>
   </div>
   <div>
-    <div>
-      <label>Email Nofity</label>
+    <div class="control-group">
       <input name="notify" type="checkbox" data-toggle="switch" {% if form.notify.value %}checked{% endif %} />
+      <label>Email Nofity</label>
     </div>
-    <div>
+    <div class="control-group">
+      <select name="timezone" value="{{ form.timezone.value }}" class="select-block select-herolist">
+      {% for value, name in form.instance.TIME_ZONE_CHOICES %}
+        <option value="{{ value }}" {% if form.timezone.value == value %}selected="selected"{% endif %}>{{ name }}</option>
+      {% endfor %}
+      </select>
       <label>Time Zone</label>
-      <div class="span6">
-        <select name="timezone" value="{{ form.timezone.value }}" class="select-block select-herolist">
-        {% for value, name in form.instance.TIME_ZONE_CHOICES %}
-          <option value="{{ value }}" {% if form.timezone.value == value %}selected="selected"{% endif %}>{{ name }}</option>
-        {% endfor %}
-        </select>
-      </div>
     </div>
-    <div>
-      <label>Prefer Time</label>
+    <div class="control-group">
       <!-- we prefer js here -->
-      <input name="preferhour" type="text" value="{{ form.preferhour.value }}">
+      <input name="preferhour" type="text" value="{{ form.preferhour.value }}" />
+      <label>Prefer Time</label>
     </div>
-    <div>
-      <label>Interval</label>
+    <div class="control-group">
       <select name="interval" value="{{ form.interval.value }}" class="select-block select-herolist">
       {% for value, hint in form.instance.INTERVAL_CHOICES %}
         <option value="{{ value }}" {% if form.interval.value|add:0 == value %}selected="selected"{% endif %}>{{ hint }}</option>
       {% endfor %}
       </select>
+      <label>Interval</label>
     </div>
 
   </div>
