@@ -280,9 +280,9 @@ class SettingView(BaseView):
         return self.render_to_response({'form': form})
 
 
-def unsubscribe(request):
+def unsubscribe(request, **kwargs):
     if request.method == "GET":
-        keys = request.GET.get('keys')
+        keys = kwargs.get('keys')
         try:
             s = Setting.objects.get(keys=keys)
             s.notify = False
@@ -294,9 +294,9 @@ def unsubscribe(request):
         return http.HttpResponseBadRequest('Bad Request')
 
 
-def activate(request):
+def activate(request, **kwargs):
     if request.method == "GET":
-        keys = request.GET.get('keys')
+        keys = kwargs.get('keys')
         try:
             s = Setting.objects.get(keys=keys)
             s.validated = True

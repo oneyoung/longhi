@@ -437,8 +437,7 @@ class SettingTest(TestCase):
         setting.notify = True
         setting.save()
 
-        urlbase = reverse('memo.views.unsubscribe')
-        url = urlbase + '?keys=%s' % keys
+        url = reverse('memo.views.unsubscribe', kwargs={'keys': keys})
         client = self.client
 
         # test begin, a get request should clear setting.notify field
@@ -455,8 +454,7 @@ class SettingTest(TestCase):
         self.assertFalse(setting.validated)
         keys = self.user.setting.keys
 
-        urlbase = reverse('memo.views.activate')
-        url = urlbase + '?keys=%s' % keys
+        url = reverse('memo.views.activate', kwargs={'keys': keys})
         client = self.client
 
         # open this url should activate the account
