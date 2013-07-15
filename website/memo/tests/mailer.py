@@ -1,10 +1,18 @@
 import email
 import re
+from bs4 import BeautifulSoup
 from datetime import date
+from django.test import TestCase
+from django.core.urlresolvers import reverse
 from memo import mailer
 from memo.models import EmailEntry, Entry
-from django.test import TestCase
 import utils
+
+
+def get_html(mail):
+    for part in mail.walk():
+        if part.get_content_type() == 'text/html':
+            return part.get_payload()
 
 
 class MailerTest(TestCase):
@@ -73,3 +81,21 @@ class MailerTest(TestCase):
         utils.create_entry(d, self.user, text=text)
         message = mailer.notify_email(ee)
         self.assertIn(text, message.as_string())
+
+    def test_activate_email(self):
+        nickname = "dummynick"
+        self.user.setting.nickname = nickname
+        self.user.setting.save()
+
+        message = mailer.activate_email(self.user)
+        # subject check
+        self.assertIn(nickname, message.get('Subject'))
+        # content check
+        html = get_html(message)
+        soup = BeautifulSoup(html)
+        a = soup.find(id="activate")
+        url = a['href']
+        # url should equal to text, in case url was banned
+        self.assertEquals(url, a.text)
+        self.assertIn(reverse('memo.views.activate',
+                              kwargs={'keys': self.user.setting.keys}), url)
