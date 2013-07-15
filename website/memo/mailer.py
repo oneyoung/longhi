@@ -1,5 +1,7 @@
 import email
 from django.conf import settings
+from django.core.urlresolvers import reverse
+from django.template.loader import render_to_string
 from models import EmailEntry, Entry
 import utils
 
@@ -87,7 +89,6 @@ def notify_email(email_entry):
     '''
     def content(user):
         ''' get content of email as string'''
-        from django.template.loader import render_to_string
         context = {}
         if user.setting.attach:  # user has such setting
             entrys = user.entry_set.all()
@@ -112,3 +113,25 @@ def notify_email(email_entry):
         'Subject': subject,
     }
     return composite_email(headers, html=content(email_entry.user))
+
+
+def activate_email(user):
+    ''' generate email for user email activation.
+    '''
+    # header
+    subject = 'Hi %s, activate your account.' % user.setting.nickname
+    headers = {
+        'To': user.username,
+        'Subject': subject,
+    }
+
+    # content
+    url = utils.fullurl(reverse('memo.views.activate',
+                                kwargs={'keys': user.setting.keys}))
+    context = {
+        'nickname': user.setting.nickname,
+        'link': url,
+    }
+    content = render_to_string('email/activate.html', context)
+
+    return composite_email(headers, html=content)

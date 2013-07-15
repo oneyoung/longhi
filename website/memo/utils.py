@@ -1,7 +1,6 @@
 import datetime
 import os
 import django.core.exceptions as e
-from django.conf import settings
 
 
 def str2date(string):
@@ -71,13 +70,18 @@ def alloc_keys(model, attr):
     return model
 
 
+def get_settings(key, default=None):
+    from django.conf import settings
+    return getattr(settings, key, default)
+
+
 def fullurl(url):
     ''' return a fullurl for outside the side access '''
-    if settings.DEBUG:  # debug mode
+    if get_settings('DEBUG'):  # debug mode
         host = "localhost:8080"
-    if settings.TEST:  # test mode
+    if get_settings('TESTING'):  # test mode
         host = "localhost:8081"
     else:
-        host = settings.HOST
+        host = get_settings('HOST', 'localhost')
 
     return ''.join(['http://', host, url])
