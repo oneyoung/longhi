@@ -1,6 +1,7 @@
 import datetime
 import os
 import django.core.exceptions as e
+from django.conf import settings
 
 
 def str2date(string):
@@ -68,3 +69,15 @@ def alloc_keys(model, attr):
             print "validator error"
             continue
     return model
+
+
+def fullurl(url):
+    ''' return a fullurl for outside the side access '''
+    if settings.DEBUG:  # debug mode
+        host = "localhost:8080"
+    if settings.TEST:  # test mode
+        host = "localhost:8081"
+    else:
+        host = settings.HOST
+
+    return ''.join(['http://', host, url])

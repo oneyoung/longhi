@@ -169,6 +169,8 @@ LOGGING = {
 LOGIN_URL = '/user/login/'
 LOGIN_REDIRECT_URL = '/memo/entry/'
 
+HOST = 'localhost'
+
 # email setting
 EMAIL_SEND_HOST = 'localhost'
 EMAIL_SEND_PORT = 8825
@@ -179,3 +181,8 @@ EMAIL_HOST = EMAIL_SEND_HOST
 EMAIL_PORT = EMAIL_SEND_PORT
 EMAIL_HOST_USER = 'dummyuser'
 EMAIL_HOST_PASSWORD = 'dummypassword'
+
+# utils to determine whether in test env
+import sys
+
+TESTING = 'test' in sys.argv
