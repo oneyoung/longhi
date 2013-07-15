@@ -59,7 +59,7 @@ class MailerTest(TestCase):
         d = date(2013, 6, 9)
         ee = mailer.alloc_email_entry(self.user, d)
 
-        message = mailer.notify_email(ee)
+        message = mailer.notify_email(ee).message()
         # message is a email.message object, let's exam the result
         # * should contain the message ID
         self.assertIn(ee.keys, message.get('Message-ID'))
@@ -79,7 +79,7 @@ class MailerTest(TestCase):
         self.user.setting.save()
         text = "Entry tesst haha"
         utils.create_entry(d, self.user, text=text)
-        message = mailer.notify_email(ee)
+        message = mailer.notify_email(ee).message()
         self.assertIn(text, message.as_string())
 
     def test_activate_email(self):
@@ -87,7 +87,7 @@ class MailerTest(TestCase):
         self.user.setting.nickname = nickname
         self.user.setting.save()
 
-        message = mailer.activate_email(self.user)
+        message = mailer.activate_email(self.user).message()
         # subject check
         self.assertIn(nickname, message.get('Subject'))
         # content check

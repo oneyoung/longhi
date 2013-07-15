@@ -63,29 +63,23 @@ def handle_replied_email(mail):
 
 
 def composite_email(headers, html=''):
-    from email.mime.multipart import MIMEMultipart
-    from email.mime.text import MIMEText
+    ''' composite and return Django email object '''
+    from django.core.mail import EmailMultiAlternatives
+    from bs4 import BeautifulSoup
 
-    message = MIMEMultipart('alternative')
-    for key, value in headers.items():
-        message.add_header(key, value)
-    # add From field
-    message.add_header('From', EMAIL_ADDRESS)
-    # add content here
-    if html:
-        from bs4 import BeautifulSoup
-        text = BeautifulSoup(html).get_text()
-        text_part = MIMEText(text, 'plain')
-        html_part = MIMEText(html, 'html')
-        message.attach(html_part)
-        message.attach(text_part)
-    return message
+    subject = headers.pop('Subject')
+    to = headers.pop('To')
+
+    text = BeautifulSoup(html).get_text()
+
+    msg = EmailMultiAlternatives(subject, text, EMAIL_ADDRESS, [to], headers=headers)
+    msg.attach_alternative(html, 'text/html')
+    return msg
 
 
 def notify_email(email_entry):
     ''' generate email for notify.
         sending job is not done here, just merely composite
-        return a email.message object
     '''
     def content(user):
         ''' get content of email as string'''
