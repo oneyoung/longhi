@@ -1,11 +1,14 @@
 import email
 import re
+import os
 from bs4 import BeautifulSoup
 from datetime import date
 from django.test import TestCase
 from django.core.urlresolvers import reverse
+from django.test.utils import override_settings
 from memo import mailer
 from memo.models import EmailEntry, Entry
+from memo.utils import get_settings
 import utils
 
 
@@ -15,12 +18,41 @@ def get_html(mail):
             return part.get_payload()
 
 
+@override_settings(EMAIL_BACKEND='django.core.mail.backends.filebased.EmailBackend',
+                   EMAIL_FILE_PATH='/tmp/memo-message')
 class MailerTest(TestCase):
     def setUp(self):
+        # setup inbox dir
+        self.inbox_dir = get_settings('EMAIL_FILE_PATH')
+        os.system('mkdir -p %s' % self.inbox_dir)
         self.user = utils.create_user()
 
     def tearDown(self):
         self.user.delete()
+        # clear inbox_dir
+        os.system('rm -rf %s' % self.inbox_dir)
+
+    def inbox(self):
+        ''' return a list of mails in inbox_dir '''
+        mails = []
+        for fname in os.listdir(self.inbox_dir):
+            path = os.path.join(self.inbox_dir, fname)
+            if os.path.isfile(path):
+                mail = email.message_from_file(open(path))
+                mails.append(mail)
+        return mails
+
+    def test_send_activate_email_when_user_register(self):
+        # after user created, a and only one email should sent
+        inbox = self.inbox()
+        self.assertEqual(len(inbox), 1)
+        # mail content check
+        mail = inbox[0]
+        html = get_html(mail)
+        soup = BeautifulSoup(html)
+        a = soup.find(id='activate')
+        self.assertIn(reverse('memo.views.activate',
+                              kwargs={'keys': self.user.setting.keys}), a['href'])
 
     def test_handle_reply_message(self):
         email_text = utils.read_file('replied-email.txt')

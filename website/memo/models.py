@@ -115,6 +115,9 @@ def user_created_hook(sender, instance, created, **kwargs):
     if created:
         Statics.objects.create(user=instance)
         Setting.objects.create(user=instance)
+        # send activate email
+        import mailer
+        mailer.activate_email(instance).send()
 
 
 @receiver(pre_save, sender=Entry)
