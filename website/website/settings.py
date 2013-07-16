@@ -134,6 +134,9 @@ INSTALLED_APPS = (
     'fts',
     'memo',
     'postman',
+    # for celery
+    'djcelery',
+    'kombu.transport.django',
 )
 
 # A sample logging configuration. The only tangible logging
@@ -186,3 +189,8 @@ EMAIL_HOST_PASSWORD = 'dummypassword'
 import sys
 
 TESTING = 'test' in sys.argv
+
+# celery
+import djcelery
+
+djcelery.setup_loader()
