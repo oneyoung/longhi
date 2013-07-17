@@ -417,6 +417,7 @@ class SettingTest(TestCase):
             'preferhour': 21,
             'interval': 2,
             'notify': 'checked',
+            'attach': 'checked',
         }
         resp = client.post(url, form)
         # we should success
@@ -429,6 +430,7 @@ class SettingTest(TestCase):
         self.assertEqual(form['preferhour'], setting.preferhour)
         self.assertEqual(form['interval'], setting.interval)
         self.assertEqual(str2bool(form['notify']), setting.notify)
+        self.assertEqual(str2bool(form['attach']), setting.attach)
 
     def test_unsubscribe(self):
         setting = get_setting(self.user)

@@ -11,4 +11,11 @@ class RegisterForm(forms.Form):
 class SettingForm(forms.ModelForm):
     class Meta:
         model = Setting
-        exclude = ('user')
+        fields = (
+            'nickname',
+            'markdown',
+            'timezone',
+            'preferhour',
+            'interval',
+            'attach',
+        )
