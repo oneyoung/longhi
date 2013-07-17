@@ -8,6 +8,7 @@ from django.contrib.auth import logout as dj_logout
 from django.core import exceptions
 from models import User, Entry, Setting
 from forms import RegisterForm, SettingForm
+from tasks import update_task
 import utils
 
 
@@ -86,6 +87,11 @@ def logout(request):
 class SuicideView(View):
     def post(self, request, *args, **kwargs):
         user = request.user
+        # disable email notify
+        setting = user.setting
+        setting.notify = False
+        update_task(setting)
+
         dj_logout(request)
         user.delete()
         return http.HttpResponseRedirect(reverse('memo.views.home'))
@@ -276,7 +282,19 @@ class SettingView(BaseView):
         setting = request.user.setting
         form = SettingForm(request.POST, instance=setting)
         if form.is_valid():
+            old = request.user.setting
             form.save()
+            new = request.user.setting
+            # determine whether to update task
+
+            def fields_changed(fields):
+                for field in fields:
+                    if getattr(old, field) != getattr(new, field):
+                        return True
+                return False
+
+            if fields_changed(['notify', 'interval', 'timezone', 'preferhour']):
+                update_task(request.user.setting)
         return self.render_to_response({'form': form})
 
 
@@ -287,6 +305,7 @@ def unsubscribe(request, **kwargs):
             s = Setting.objects.get(keys=keys)
             s.notify = False
             s.save()
+            update_task(s)
             return http.HttpResponse('Unsubscribe success')
         except exceptions.ObjectDoesNotExist:
             return http.HttpResponseNotFound('Not found')
