@@ -3,6 +3,7 @@ import utils
 from datetime import date, datetime, timedelta
 from django.utils import timezone
 from memo import tasks
+from memo.models import Setting
 from mailer import MailBase
 
 tz = pytz.timezone('Asia/Shanghai')
@@ -17,12 +18,13 @@ class TaskTest(MailBase):
         s.timezone = '8.0'
         s.preferhour = 1
         s.interval = 1
+        s.save()
 
         tasks.update_task(s)
-        nexttime = self.user.setting.nexttime
+        nexttime = Setting.objects.get(user=self.user).nexttime
         t = date.today()
-        desired_time = datetime(t.year, t.month, t.day) + timedelta(hours=1)
-        self.assertEqual(nexttime, desired_time)
+        desired_time = (datetime(t.year, t.month, t.day) + timedelta(hours=1))
+        self.assertEqual(desired_time.toordinal(), nexttime.toordinal())
 
         s = self.user.setting
         s.notify = False
@@ -38,8 +40,46 @@ class TaskTest(MailBase):
         # clear inbox to delete all activate emails
         self.clear_inbox()
 
-        user1.setting.notify = True
-        user2.setting.notify = True
-        user3.setting.notify = True
+        old_datetime = datetime(2000, 1, 1).replace(tzinfo=tz)
+
+        s1 = user1.setting
+        s1.notify = True
+        s1.timezone = '11.0'
+        s1.preferhour = 1
+        s1.nexttime = old_datetime
+        s1.save()
+
+        s2 = user2.setting
+        s2.notify = True
+        s2.timezone = '-9.0'
+        s2.preferhour = 8
+        s2.nexttime = old_datetime
+        s2.save()
+
+        s3 = user3.setting
+        s3.notify = True
+        s3.timezone = '8.0'
+        s3.preferhour = 22
+        s3.nexttime = datetime(2100, 1, 1).replace(tzinfo=tz)  # future time
+        s3.save()
 
         tasks.do_notify()
+
+        # check result
+        today = datetime.utcnow().replace(tzinfo=tz)
+
+        mails1 = self.recv_mail(user1)
+        self.assertEqual(len(mails1), 1)
+        subject = mails1[0].get('Subject')
+        t1 = today.astimezone(pytz.timezone('Asia/Tokyo'))
+        self.assertIn("%s %d" % (t1.strftime('%b'), t1.day), subject)
+
+        mails2 = self.recv_mail(user2)
+        self.assertEqual(len(mails2), 1)
+        subject = mails1[0].get('Subject')
+        t2 = today.replace(tzinfo=pytz.timezone('America/Alaska'))
+        self.assertIn("%s %d" % (t2.strftime('%b'), t2.day), subject)
+
+        # user3 should not recv notify mail
+        mails3 = self.recv_mail(user3)
+        self.assertEqual(len(mails3), 0)

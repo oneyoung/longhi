@@ -11,7 +11,7 @@ def update_task(setting):
     if setting.notify:
         t = datetime.date.today()
         utctime = datetime.datetime(t.year, t.month, t.day)
-        nexttime = utctime + setting.utc_offset()
+        nexttime = (utctime + setting.utc_offset()).replace(tzinfo=timezone.utc)
     else:
         nexttime = None
     # only touch nexttime field
@@ -22,7 +22,7 @@ def do_notify():
     ''' very simple notify routine '''
     now = datetime.datetime.utcnow()
     for s in Setting.objects.filter(notify=True):
-        if now >= s.nexttime:  # time to notify
+        if now.toordinal() >= s.nexttime.toordinal():  # time to notify
             date = (now + s.timezone_offset()).date()  # get right date
             user = s.user
             # avoid duplicate notify
