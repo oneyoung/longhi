@@ -1,4 +1,5 @@
 # _*_ coding: utf8 _*_
+from datetime import timedelta
 from django.contrib import auth
 from django.db import models
 
@@ -96,20 +97,21 @@ class Setting(models.Model):
     # keys for unsubscribe
     keys = models.CharField(max_length=256, blank=True, null=True)
     validated = models.BooleanField(default=False)  # email validation
+    # next timestamp to send notify
+    nexttime = models.DateTimeField(blank=True, null=True)
+
+    def timezone_offset(self):
+        value = float(self.timezone)
+        hour = int(value)
+        minute = (value - hour) * 60
+        return timedelta(hours=hour, minutes=minute)
 
     def utc_offset(self):
         ''' next notify time offset to UTC 0:00
             return a timedelta object
         '''
-        from datetime import timedelta
-
-        def timezone_offset():
-            value = float(self.timezone)
-            hour = int(value)
-            minute = (value - hour) * 60
-            return timedelta(hours=hour, minutes=minute)
         hours = (self.interval - 1) * 24
-        return timedelta(hours=hours) + timezone_offset() + timedelta(hours=self.preferhour)
+        return timedelta(hours=hours) + self.timezone_offset() + timedelta(hours=self.preferhour)
 
 
 class EmailEntry(models.Model):
