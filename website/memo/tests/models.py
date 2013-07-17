@@ -139,3 +139,29 @@ class EmailEntryTest(TestCase):
         # test utils.alloc_email_entry
         for i in range(10):
             alloc_email_entry(user, today)
+
+
+class SettingTest(TestCase):
+    def setUp(self):
+        self.user = utils.create_user()
+
+    def tearDown(self):
+        self.user.delete()
+
+    def test_utc_offset(self):
+        s = self.user.setting
+
+        # setting timezone
+        s.timezone = '8.0'
+        s.preferhour = 0
+        s.interval = 1
+        self.assertEqual(s.utc_offset(), timedelta(hours=8))
+
+        s.interval = 2
+        self.assertEqual(s.utc_offset(), timedelta(hours=32))
+
+        s.timezone = '9.0'
+        self.assertEqual(s.utc_offset(), timedelta(hours=33))
+
+        s.preferhour = 8
+        self.assertEqual(s.utc_offset(), timedelta(hours=41))

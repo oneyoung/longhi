@@ -97,6 +97,20 @@ class Setting(models.Model):
     keys = models.CharField(max_length=256, blank=True, null=True)
     validated = models.BooleanField(default=False)  # email validation
 
+    def utc_offset(self):
+        ''' next notify time offset to UTC 0:00
+            return a timedelta object
+        '''
+        from datetime import timedelta
+
+        def timezone_offset():
+            value = float(self.timezone)
+            hour = int(value)
+            minute = (value - hour) * 60
+            return timedelta(hours=hour, minutes=minute)
+        hours = (self.interval - 1) * 24
+        return timedelta(hours=hours) + timezone_offset() + timedelta(hours=self.preferhour)
+
 
 class EmailEntry(models.Model):
     keys = models.CharField(max_length=256, unique=True)
