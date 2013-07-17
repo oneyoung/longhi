@@ -20,7 +20,7 @@ def get_html(mail):
 
 @override_settings(EMAIL_BACKEND='django.core.mail.backends.filebased.EmailBackend',
                    EMAIL_FILE_PATH='/tmp/memo-message')
-class MailerTest(TestCase):
+class MailBase(TestCase):
     def setUp(self):
         # setup inbox dir
         self.inbox_dir = get_settings('EMAIL_FILE_PATH')
@@ -42,6 +42,8 @@ class MailerTest(TestCase):
                 mails.append(mail)
         return mails
 
+
+class MailerTest(MailBase):
     def test_send_activate_email_when_user_register(self):
         # after user created, a and only one email should sent
         inbox = self.inbox()

@@ -6,7 +6,15 @@ from django.core import exceptions
 import utils
 
 
-class UserTest(TestCase):
+class BaseTest(TestCase):
+    def setUp(self):
+        self.user = utils.create_user()
+
+    def tearDown(self):
+        self.user.delete()
+
+
+class UserTest(BaseTest):
     def test_user_fileds_access(self):
         user = 'usertest@test.com'
         pswd = 'usertest'
@@ -33,13 +41,7 @@ class UserTest(TestCase):
             Setting.objects.get(pk=setting_pk)
 
 
-class EntryTest(TestCase):
-    def setUp(self):
-        self.user = utils.create_user()
-
-    def tearDown(self):
-        self.user.delete()
-
+class EntryTest(BaseTest):
     def test_save_and_read(self):
         user = self.user
 
@@ -75,13 +77,7 @@ class EntryTest(TestCase):
         create_entry(entry_date, text, html)
 
 
-class StaticsTest(TestCase):
-    def setUp(self):
-        self.user = utils.create_user()
-
-    def tearDown(self):
-        self.user.delete()
-
+class StaticsTest(BaseTest):
     def test_count_store(self):
         user = self.user
 
@@ -117,13 +113,7 @@ class StaticsTest(TestCase):
         statics_equal(15, 10, 10)
 
 
-class EmailEntryTest(TestCase):
-    def setUp(self):
-        self.user = utils.create_user()
-
-    def tearDown(self):
-        self.user.delete()
-
+class EmailEntryTest(BaseTest):
     def test_emailentry(self):
         user = self.user
         today = date.today()
