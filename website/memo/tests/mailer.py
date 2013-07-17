@@ -42,11 +42,22 @@ class MailBase(TestCase):
                 mails.append(mail)
         return mails
 
+    def clear_inbox(self):
+        os.system('rm -rf %s/*' % self.inbox_dir)
+
+    def recv_mail(self, user):
+        ''' fetch user specified email '''
+        mails = []
+        for m in self.inbox():
+            if m.get('To') == user.username:
+                mails.append(m)
+        return mails
+
 
 class MailerTest(MailBase):
     def test_send_activate_email_when_user_register(self):
         # after user created, a and only one email should sent
-        inbox = self.inbox()
+        inbox = self.recv_mail(self.user)
         self.assertEqual(len(inbox), 1)
         # mail content check
         mail = inbox[0]

@@ -18,10 +18,8 @@ def read_file(filename):
     return codecs.open(get_file(filename), 'r', encoding='utf8').read()
 
 
-def create_user():
+def create_user(username=username, password=password):
     "create a user and then return it"
-    global username
-    global password
     user = User.objects.create_user(username=username, password=password)
     user.save()
     return user
