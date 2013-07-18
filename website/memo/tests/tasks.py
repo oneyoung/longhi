@@ -66,18 +66,21 @@ class TaskTest(MailBase):
         tasks.do_notify()
 
         # check result
-        today = datetime.utcnow().replace(tzinfo=tz)
+        today = datetime.utcnow().replace(tzinfo=timezone.utc)
 
         mails1 = self.recv_mail(user1)
         self.assertEqual(len(mails1), 1)
         subject = mails1[0].get('Subject')
-        t1 = today.astimezone(pytz.timezone('Asia/Tokyo'))
+        t1 = today.astimezone(pytz.timezone('Asia/Sakhalin'))
         self.assertIn("%s %d" % (t1.strftime('%b'), t1.day), subject)
+        # check next timestamp
+        nexttime = Setting.objects.get(user=user1).nexttime
+        self.assertTrue(old_datetime.toordinal() < nexttime.toordinal())
 
         mails2 = self.recv_mail(user2)
         self.assertEqual(len(mails2), 1)
-        subject = mails1[0].get('Subject')
-        t2 = today.replace(tzinfo=pytz.timezone('America/Alaska'))
+        subject = mails2[0].get('Subject')
+        t2 = today.astimezone(pytz.timezone('America/Juneau'))
         self.assertIn("%s %d" % (t2.strftime('%b'), t2.day), subject)
 
         # user3 should not recv notify mail
