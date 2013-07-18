@@ -41,3 +41,6 @@ nosetests.xml
 virtualenv/
 
 .*
+website/db.sqlite
+website/postman/mailer/logs/
+website/postman/mailer/run/
