@@ -1,4 +1,5 @@
 import datetime
+import celery
 from django.utils import timezone
 from models import Setting
 import mailer
@@ -18,6 +19,7 @@ def update_task(setting):
     Setting.objects.filter(user=setting.user).update(nexttime=nexttime)
 
 
+@celery.task(name='do_notify')
 def do_notify():
     ''' very simple notify routine '''
     now = datetime.datetime.utcnow()
