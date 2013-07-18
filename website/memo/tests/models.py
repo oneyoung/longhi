@@ -131,7 +131,7 @@ class EmailEntryTest(BaseTest):
             alloc_email_entry(user, today)
 
 
-class SettingTest(TestCase):
+class SettingModelTest(TestCase):
     def setUp(self):
         self.user = utils.create_user()
 
