@@ -37,6 +37,10 @@
       </select>
       <label>Interval</label>
     </div>
+    <div class="control-group">
+      <input name="attach" type="checkbox" data-toggle="switch" {% if form.attach.value %}checked{% endif %} />
+      <label>Attach an Entry</label>
+    </div>
 
   </div>
   <input name="submit" type="submit" value="Save!" class="btn btn-large btn-block btn-success" />

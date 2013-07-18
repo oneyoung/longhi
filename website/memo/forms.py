@@ -14,6 +14,7 @@ class SettingForm(forms.ModelForm):
         fields = (
             'nickname',
             'markdown',
+            'notify',
             'timezone',
             'preferhour',
             'interval',
