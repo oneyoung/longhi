@@ -193,14 +193,6 @@ TESTING = 'test' in sys.argv
 
 # celery
 import djcelery
-from celery.schedules import crontab
 
 BROKER_URL = 'django://'
-CELERYBEAT_SCHEDULE = {
-    'do-notify-every-hour': {
-        'task': 'memo.tasks.job',
-        'schedule': crontab(minute=0, hour='*'),
-    },
-}
-
 djcelery.setup_loader()
