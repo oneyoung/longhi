@@ -1,0 +1,10 @@
+# NOTE: this file based on /etc/default/celeryd
+if test -f /etc/default/celeryd; then
+    . /etc/default/celeryd
+fi
+
+# Path to celerybeat
+CELERYBEAT="$ENV_PYTHON $CELERYD_CHDIR/manage.py celerybeat"
+
+# Extra arguments to celerybeat
+CELERYBEAT_OPTS="--schedule=/var/run/celerybeat-schedule"
