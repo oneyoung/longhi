@@ -1,10 +1,10 @@
 # _*_ coding: utf8 _*_
 from datetime import timedelta
-from django.contrib import auth
+from django.contrib.auth import models as auth_models
 from django.db import models
 
 
-User = auth.models.User
+User = auth_models.User
 
 
 # a wrapper to avoid explict user data expose to db admin
