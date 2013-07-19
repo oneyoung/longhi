@@ -2,8 +2,8 @@ import email
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.template.loader import render_to_string
-from models import EmailEntry, Entry
-import utils
+from .models import EmailEntry, Entry
+from . import utils
 
 EMAIL_ADDRESS = 'postman@%s' % settings.EMAIL_HOST
 

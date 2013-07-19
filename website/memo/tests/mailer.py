@@ -9,7 +9,7 @@ from django.test.utils import override_settings
 from memo import mailer
 from memo.models import EmailEntry, Entry
 from memo.utils import get_settings
-import utils
+from . import utils
 
 
 def get_html(mail):

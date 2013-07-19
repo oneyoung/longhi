@@ -3,7 +3,7 @@ from memo.models import User, Statics, Setting, EmailEntry
 from memo.mailer import alloc_email_entry
 from django.test import TestCase
 from django.core import exceptions
-import utils
+from . import utils
 
 
 class BaseTest(TestCase):

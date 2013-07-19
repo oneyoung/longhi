@@ -1,5 +1,5 @@
 from django import forms
-from models import Setting
+from .models import Setting
 
 
 class RegisterForm(forms.Form):

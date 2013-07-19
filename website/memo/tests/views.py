@@ -4,7 +4,7 @@ from django.test import TestCase
 from django.core.urlresolvers import reverse
 from memo.utils import str2entrys, str2date, date2str
 from memo.models import Entry, User
-import utils
+from . import utils
 
 
 def get_setting(user):

@@ -1,8 +1,8 @@
 import datetime
 import celery
 from django.utils import timezone
-from models import Setting
-import mailer
+from .models import Setting
+from . import mailer
 
 # we all use UTC time here
 timezone.activate(timezone.utc)

@@ -6,10 +6,10 @@ from django.shortcuts import redirect
 from django.core.urlresolvers import reverse
 from django.contrib.auth import logout as dj_logout
 from django.core import exceptions
-from models import User, Entry, Setting
-from forms import RegisterForm, SettingForm
-from tasks import update_task
-import utils
+from .models import User, Entry, Setting
+from .forms import RegisterForm, SettingForm
+from .tasks import update_task
+from . import utils
 
 
 def _as_view(name, login=False):
