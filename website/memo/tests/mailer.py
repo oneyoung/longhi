@@ -1,13 +1,14 @@
 import email
 import re
 import os
+import urllib
 from bs4 import BeautifulSoup
 from datetime import date
-from django.test import TestCase
+from django.test import LiveServerTestCase
 from django.core.urlresolvers import reverse
 from django.test.utils import override_settings
 from memo import mailer
-from memo.models import EmailEntry, Entry
+from memo.models import EmailEntry, Entry, Setting
 from memo.utils import get_settings
 from . import utils
 
@@ -20,7 +21,7 @@ def get_html(mail):
 
 @override_settings(EMAIL_BACKEND='django.core.mail.backends.filebased.EmailBackend',
                    EMAIL_FILE_PATH='/tmp/memo-message')
-class MailBase(TestCase):
+class MailBase(LiveServerTestCase):
     def setUp(self):
         # setup inbox dir
         self.inbox_dir = get_settings('EMAIL_FILE_PATH')
@@ -144,3 +145,7 @@ class MailerTest(MailBase):
         self.assertEquals(url, a.text)
         self.assertIn(reverse('memo.views.activate',
                               kwargs={'keys': self.user.setting.keys}), url)
+        # get request should active the account
+        f = urllib.urlopen(url)
+        self.assertEqual(f.getcode(), 200)  # should respose OK
+        self.assertTrue(Setting.objects.get(user=self.user).validated)
