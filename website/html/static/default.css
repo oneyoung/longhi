@@ -109,6 +109,24 @@ body {
 	margin: 0 0 1.2em;
 }
 
+/* memo/write */
+.entry-form {
+	margin: 30px;
+	padding: 50px;
+}
+
+.entry-form .entry-head {
+	text-align: left;
+}
+
+.entry-form .entry-star {
+	float: right;
+}
+
+.entry-form textarea {
+	width: 100%;
+}
+
 /* setting */
 .setting-form {
 	display: table;

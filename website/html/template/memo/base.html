@@ -105,7 +105,7 @@ function redirect(url) {
 }
 
 $(window).load(function () {
-  $('#content').delegate('.star-btn', 'click', function () {
+  $('#content').delegate('.entry .star-btn', 'click', function () {
     var checkbox = $(this).prev('input:checkbox');
     var nextState = !checkbox.prop('checked');
     var data = {
@@ -116,6 +116,13 @@ $(window).load(function () {
       checkbox.prop('checked', nextState);
     });
   });
+
+  $('#content').delegate('.entry-form .star-btn', 'click', function () {
+    var checkbox = $(this).prev('input:checkbox');
+    var nextState = !checkbox.prop('checked');
+    checkbox.prop('checked', nextState);
+  });
+
 });
 
 </script>

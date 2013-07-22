@@ -210,7 +210,7 @@ class MemoTest(BaseTest):
         element.send_keys(date)
         element = self.browser.find_element_by_name('text')
         element.send_keys(text)
-        element = self.browser.find_element_by_name('star')
+        element = self.browser.find_element_by_css_selector('.entry-form .star-btn')
         if star:
             element.click()  # star the entry
         # then submit

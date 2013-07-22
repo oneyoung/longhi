@@ -30,9 +30,9 @@ $(window).load(function () {
 {% block memo_body %}
 <div class="entry-form">
   {% csrf_token %}
-  <div><input name="date" type="text" /></div>
-  <div><input name="star" type="checkbox" /></div>
+  <div class="entry-head"><input name="date" type="text" />
+  <span class="entry-star"><input name="star" type="checkbox" /><a class="star-btn" href="#"><span class="fui-heart"></span></a></span></div>
   <div><textarea name="text" rows=20 placeholder="Write down your entry here."></textarea></div>
-  <div><input name="submit" type="submit" /></div>
+  <div><input name="submit" type="submit" value="Save" class="btn btn-large btn-success" /></div>
 </div>
 {% endblock %}
