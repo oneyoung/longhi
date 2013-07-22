@@ -2,6 +2,7 @@
 import json
 from django import http
 from django.views.generic.base import View, TemplateView
+from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import redirect
 from django.core.urlresolvers import reverse
 from django.contrib.auth import logout as dj_logout
@@ -328,6 +329,7 @@ def activate(request, **kwargs):
         return http.HttpResponseBadRequest('Bad Request')
 
 
+@csrf_exempt
 def mailbox(request):
     if request.method == "POST":
         return http.HttpResponse('OK')

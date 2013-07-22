@@ -466,17 +466,25 @@ class SettingTest(TestCase):
         self.assertTrue(get_setting(self.user).validated)
 
 
-class MailboxTest(TestCase):
+from django.test import LiveServerTestCase
+
+
+class MailboxTest(LiveServerTestCase):
+    '''
+    test case for post email text when email received.
+    Since the request is issued by other program, usually use a
+    script, so we need to disable csrf token check
+    '''
     def setUp(self):
-        self.url = reverse('mailbox')
+        self.url = self.live_server_url + reverse('mailbox')
 
     def test_mailbox(self):
-        client = self.client
+        import urllib
         # post a email should response OK
         mail = utils.read_file('example.email')
-        resp = client.post(self.url, {'mail': mail})
-        self.assertEqual(resp.status_code, 200)
+        f = urllib.urlopen(self.url, urllib.urlencode({'mail': mail}))
+        self.assertEqual(f.getcode(), 200)
 
         # GET request to this url should forbidden
-        resp = client.get(self.url)
-        self.assertNotEqual(resp.status_code, 200)
+        f = urllib.urlopen(self.url)
+        self.assertNotEqual(f.getcode(), 200)
