@@ -112,6 +112,14 @@ class BaseTest(LiveServerTestCase):
         )
         self.fill_form(form)
 
+    def get_input_value(self, name):
+        element = self.browser.find_element_by_name(name)
+        input_type = element.get_attribute('type')
+        if input_type == 'checkbox':
+            return True if element.get_attribute('checked') else False
+        else:
+            return element.get_attribute('value')
+
     def assert_element_disabled(self, name, state):
         submit = self.browser.find_element_by_name(name)
         disabled = True if submit.get_attribute('disabled') else False
@@ -276,3 +284,30 @@ class MemoTest(BaseTest):
         # click latest button
         click_button_by_id(latest_btn)
         self.assert_body_contain(entrys[-1][-1])
+
+    def test_setting_page(self):
+        url = self.reverse('memo.views.memo_setting')
+        self.login()
+        self.browser.get(url)  # open setting page
+
+        # by default notify setting would disabled, thus sub setting should be
+        # disabled
+        assert False == self.get_input_value('notify'), "notify should be unchecked by default"
+        for name in ['timezone', 'preferhour', 'interval', 'attach']:
+            self.assert_element_disabled(name, True)
+        # setting the form
+        form = (
+            ('nickname', 'NewNick'),
+            ('markdown', True),
+            ('notify', True),
+            ('preferhour', '14'),
+            ('attach', True),
+            ('submit', True),
+        )
+        self.fill_form(form)
+        # after submit, page should say "Setting Save Successfully"
+        self.assert_body_contain("Setting Save Successfully")
+        # check the result
+        for name, value in form:
+            rel_value = self.get_input_value(name)
+            assert rel_value == value, "%s: expect %s, while real %s" % (name, value, rel_value)
