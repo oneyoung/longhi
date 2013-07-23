@@ -282,7 +282,9 @@ class SettingView(BaseView):
     def post(self, request, *args, **kwargs):
         setting = request.user.setting
         form = SettingForm(request.POST, instance=setting)
+        success = False
         if form.is_valid():
+            success = True
             old = request.user.setting
             form.save()
             new = request.user.setting
@@ -296,7 +298,8 @@ class SettingView(BaseView):
 
             if fields_changed(['notify', 'interval', 'timezone', 'preferhour']):
                 update_task(request.user.setting)
-        return self.render_to_response({'form': form})
+
+        return self.render_to_response({'form': form, 'success': success})
 
 
 def unsubscribe(request, **kwargs):

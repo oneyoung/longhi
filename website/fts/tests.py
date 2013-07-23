@@ -82,6 +82,7 @@ class BaseTest(LiveServerTestCase):
         for name, value in form:
             element = self.browser.find_element_by_name(name)
             if isinstance(value, str):
+                element.clear()  # should clear existing text
                 element.send_keys(value)
             elif value:  # bool value deter whether to click
                 element.click()
@@ -123,14 +124,17 @@ class BaseTest(LiveServerTestCase):
     def assert_element_disabled(self, name, state):
         submit = self.browser.find_element_by_name(name)
         disabled = True if submit.get_attribute('disabled') else False
-        self.assertEqual(disabled, state)
+        assert disabled == state, "%s: desire %s, result %s" % (name, state, disabled)
 
     def assert_submit_button_disabled(self, state):
         self.assert_element_disabled('submit', state)
 
-    def assert_body_contain(self, string):
+    def assert_body_contain(self, string, include=True):
         body = self.browser.find_element_by_tag_name('body')
-        self.assertIn(string, body.text)
+        if include:
+            self.assertIn(string, body.text)
+        else:
+            assert not string in body.text
 
 
 class AccountTest(BaseTest):
@@ -290,6 +294,9 @@ class MemoTest(BaseTest):
         self.login()
         self.browser.get(url)  # open setting page
 
+        success_str = "Setting Save Successfully"
+
+        self.assert_body_contain(success_str, include=False)
         # by default notify setting would disabled, thus sub setting should be
         # disabled
         assert False == self.get_input_value('notify'), "notify should be unchecked by default"
@@ -298,16 +305,18 @@ class MemoTest(BaseTest):
         # setting the form
         form = (
             ('nickname', 'NewNick'),
-            ('markdown', True),
-            ('notify', True),
-            ('preferhour', '14'),
-            ('attach', True),
+            #('markdown', True),
+            #('notify', True),
+            #('preferhour', '14'),
+            #('attach', True),
             ('submit', True),
         )
         self.fill_form(form)
         # after submit, page should say "Setting Save Successfully"
-        self.assert_body_contain("Setting Save Successfully")
+        self.assert_body_contain(success_str)
         # check the result
         for name, value in form:
+            if name == 'submit':  # skip submit elem
+                continue
             rel_value = self.get_input_value(name)
             assert rel_value == value, "%s: expect %s, while real %s" % (name, value, rel_value)
