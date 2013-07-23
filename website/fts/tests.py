@@ -71,25 +71,33 @@ class BaseTest(LiveServerTestCase):
     def fullurl(self, path):
         return '%s%s' % (self.live_server_url, path)
 
+    def fill_form(self, form):
+        ''' fill the form:
+            form struct:
+                ((NAME, VALUE), ...)
+            NAME -- name of the input element
+            VALUE -- if value is string, we will user send_keys,
+                    else VALUE is a bool value, and True indicate click element
+        '''
+        for name, value in form:
+            element = self.browser.find_element_by_name(name)
+            if isinstance(value, str):
+                element.send_keys(value)
+            elif value:  # bool value deter whether to click
+                element.click()
+
     def fill_register_form(self, username, password, password_confirm=None, submit=True):
         # open login page
         self.browser.get(self.reverse('memo.views.register'))
         # fill in the email filed
-        tag = self.browser.find_element_by_name('username')
-        tag.send_keys(username)
-        # fill in the nickname filed
-        tag = self.browser.find_element_by_name('nickname')
-        tag.send_keys(self.nickname)
-        # input the passowrd
-        tag = self.browser.find_element_by_name('password')
-        tag.send_keys(password)
-        # comfirm the passowrd
-        tag = self.browser.find_element_by_name('password_confirm')
-        tag.send_keys(password_confirm if password_confirm else password)
-        # submit
-        if submit:
-            tag = self.browser.find_element_by_name('submit')
-            tag.click()
+        form = (
+            ('username', username),
+            ('nickname', self.nickname),
+            ('password', password),
+            ('password_confirm', password_confirm if password_confirm else password),
+            ('submit', True if submit else False),
+        )
+        self.fill_form(form)
 
     def fill_login_form(self, username, password, next='', openpage=True, submit=True):
         if openpage:
@@ -97,19 +105,20 @@ class BaseTest(LiveServerTestCase):
             url_para = '?next=%s' % next if next else ''
             self.browser.get(self.fullurl(url_base + url_para))
         # fill the username and password field
-        tag = self.browser.find_element_by_name('username')
-        tag.send_keys(username)
-        tag = self.browser.find_element_by_name('password')
-        tag.send_keys(password)
-        if submit:
-            # submit
-            tag = self.browser.find_element_by_name('submit')
-            tag.click()
+        form = (
+            ('username', username),
+            ('password', password),
+            ('submit', True if submit else False),
+        )
+        self.fill_form(form)
 
-    def assert_submit_button_disabled(self, state):
-        submit = self.browser.find_element_by_name('submit')
+    def assert_element_disabled(self, name, state):
+        submit = self.browser.find_element_by_name(name)
         disabled = True if submit.get_attribute('disabled') else False
         self.assertEqual(disabled, state)
+
+    def assert_submit_button_disabled(self, state):
+        self.assert_element_disabled('submit', state)
 
     def assert_body_contain(self, string):
         body = self.browser.find_element_by_tag_name('body')
