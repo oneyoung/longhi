@@ -55,7 +55,9 @@ class BaseTest(LiveServerTestCase):
         self.password = 'xxxxxxxx'
         self.nickname = 'robot'
         # new user register
-        self.fill_register_form(self.username, self.password)
+        #self.fill_register_form(self.username, self.password)
+        from memo.tests.utils import create_user
+        create_user(self.username, self.password, self.nickname)
 
     def tearDown(self):
         self.browser.quit()

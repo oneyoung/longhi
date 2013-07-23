@@ -1,5 +1,5 @@
 import os.path
-from memo.models import User, Entry
+from memo.models import User, Entry, Setting
 
 # default user name and password
 username = 'test@test.com'
@@ -18,10 +18,14 @@ def read_file(filename):
     return codecs.open(get_file(filename), 'r', encoding='utf8').read()
 
 
-def create_user(username=username, password=password):
+def create_user(username=username, password=password, nickname=''):
     "create a user and then return it"
     user = User.objects.create_user(username=username, password=password)
     user.save()
+    if nickname:
+        s = Setting.objects.get(user=user)
+        s.nickname = nickname
+        s.save()
     return user
 
 
