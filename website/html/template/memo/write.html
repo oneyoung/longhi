@@ -1,7 +1,304 @@
 {% extends 'memo/base.html' %}
 
 {% block memo_head %}
+<style>
+/* calendar style here */
+.picker-container {
+  position: absolute;
+  z-index: 99;
+}
+
+.cal {
+  background-color: white;
+  display: block;
+  width: 216px;
+  -webkit-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
+  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+.cal a {
+  text-decoration: none;
+}
+
+.cal tr, .cal th, .cal td {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+
+.cal caption {
+  line-height: 32px;
+  font-weight: bold;
+  color: #e2e2e2;
+  text-align: center;
+  text-shadow: 0 -1px black;
+  background: #333;
+  //background: rgba(0, 0, 0, 0.35);
+  border-top: 1px solid #333;
+  border-bottom: 1px solid #313131;
+  -webkit-box-shadow: inset 0 1px rgba(255, 255, 255, 0.04);
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.04);
+}
+.cal caption a {
+  display: block;
+  line-height: 32px;
+  padding: 0 10px;
+  font-size: 15px;
+  color: #e2e2e2;
+}
+.cal caption a:hover {
+  color: white;
+}
+.cal caption .prev {
+  float: left;
+}
+.cal caption .next {
+  float: right;
+}
+.cal th, .cal td {
+  width: 30px;
+  text-align: center;
+  text-shadow: 0 1px rgba(255, 255, 255, 0.8);
+}
+.cal th:first-child, .cal td:first-child {
+  border-left: 0;
+}
+.cal th {
+  line-height: 20px;
+  font-size: 8px;
+  color: #696969;
+  text-transform: uppercase;
+  background: #f3f3f3;
+  border-left: 1px solid #f3f3f3;
+}
+.cal td {
+  font-size: 11px;
+  font-weight: bold;
+  border-top: 1px solid #c2c2c2;
+  border-left: 1px solid #c2c2c2;
+}
+.cal td a {
+  clear: both;
+  display: block;
+  position: relative;
+  width: 30px;
+  line-height: 28px;
+  color: #666;
+  background-image: -webkit-linear-gradient(top, #eaeaea, #e5e5e5 60%, #d9d9d9);
+  background-image: -moz-linear-gradient(top, #eaeaea, #e5e5e5 60%, #d9d9d9);
+  background-image: -o-linear-gradient(top, #eaeaea, #e5e5e5 60%, #d9d9d9);
+  background-image: linear-gradient(to bottom, #eaeaea, #e5e5e5 60%, #d9d9d9);
+  -webkit-box-shadow: inset 1px 1px rgba(255, 255, 255, 0.5);
+  box-shadow: inset 1px 1px rgba(255, 255, 255, 0.5);
+}
+.cal td a:hover, .cal td.off a {
+  background: #f3f3f3;
+}
+.cal td.off a {
+  color: #b3b3b3;
+}
+.cal td.active a, .cal td a:active {
+  margin: -1px;
+  color: #f3f3f3;
+  text-shadow: 0 1px rgba(0, 0, 0, 0.3);
+  background: #6dafbf;
+  border: 1px solid #598b94;
+  -webkit-box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
+}
+.cal td.active:first-child a, .cal td:first-child a:active {
+  border-left: 0;
+  margin-left: 0;
+}
+.cal td.active:last-child a, .cal td:last-child a:active {
+  border-right: 0;
+  margin-right: 0;
+}
+.cal tr:last-child td.active a, .cal tr:last-child td a:active {
+  border-bottom: 0;
+  margin-bottom: 0;
+}
+</style>
+
 <script type="text/javascript">
+/* calendar.js */
+(function ($) {
+  /* "YYYY-MM[-DD]" => Date */
+  function strToDate(str) {
+    try {
+      var array = str.split('-');
+      var year = parseInt(array[0]);
+      var month = parseInt(array[1]);
+      var day = array.length > 2? parseInt(array[2]): 1 ;
+      if (year > 0 && month >= 0) {
+        return new Date(year, month, day);
+      } else {
+        return null;
+      }
+    } catch (err) {}; // just throw any illegal format
+  };
+
+  /* Date => "YYYY-MM-DD" */
+  function dateToStr(d) {
+    /* fix month zero base */
+    var year = d.getFullYear();
+    var month = d.getMonth();
+    if (month == 0) {
+      month = 12;
+      year -= 1;
+    }
+    return year + "-" + month + "-" + d.getDate()
+  };
+
+  $.fn.calendar = function (options) {
+    var _this = this;
+    var opts = $.extend({}, $.fn.calendar.defaults, options);
+    var week = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    var tHead = week.map(function (day) {
+      return "<th>" + day + "</th>";
+    }).join("");
+
+    _this.init = function () {
+      var tpl = '<table class="cal">' +
+      '<caption>' +
+      '  <span class="prev"><a href="#">&larr;</a></span>' +
+      '  <span class="next"><a href="#">&rarr;</a></span>' +
+      '  <span class="month"><span>' +
+      "</caption>" +
+      "<thead><tr>" +
+      tHead +
+      "</tr></thead>" +
+      "<tbody>" +
+      "</tbody>" + "</table>";
+      var html = $(tpl);
+      _this.append(html);
+    };
+
+    function daysInMonth(d) {
+      var newDate = new Date(d);
+      newDate.setMonth(newDate.getMonth() + 1);
+      newDate.setDate(0);
+      return newDate.getDate();
+    }
+
+    _this.update = function (date, active) {
+      var mDate = new Date(date);
+      mDate.setDate(1); /* star of the month */
+      var day = mDate.getDay();
+      mDate.setDate(mDate.getDate() - day) /* now mDate is the start day of the table */
+
+      function dateToTag(d) {
+        var tag = $('<td><a href="#"></a></td>');
+        var a = tag.find('a');
+        a.text(d.getDate());
+        a.attr('data-date', dateToStr(d));
+        if (date.getMonth() != d.getMonth()) { // the bounday month
+          tag.addClass('off');
+        } else if (active && date.getDate() == d.getDate()) { // the select day
+          tag.addClass('active');
+          _this.attr('data-date', dateToStr(d));
+        }
+        return tag;
+      };
+
+      var tBody = _this.find('tbody');
+      tBody.empty(); /* clear previous first */
+      var cols = Math.ceil((day + daysInMonth(date))/7);
+      for (var i = 0; i < cols; i++) {
+        var tr = $('<tr></tr>');
+        for (var j = 0; j < 7; j++, mDate.setDate(mDate.getDate() + 1)) {
+          tr.append(dateToTag(mDate));
+        }
+        tBody.append(tr);
+      }
+
+      /* set month head */
+      var monthStr;
+      if (date.getMonth() == 0) { /* fix month zero base */
+        monthStr = (date.getFullYear() - 1) + '-' + 12;
+      } else {
+        monthStr = date.getFullYear() + '-' + date.getMonth();
+      }
+      _this.find('.month').text(monthStr)
+    };
+
+    _this.getCurrentDate = function () {
+      return _this.attr('data-date');
+    }
+
+    _this.init();
+    _this.update(opts.date? opts.date: new Date(), true);
+
+    /* event binding */
+    _this.delegate('tbody td', 'click', function () {
+      _this.find('.active').removeClass('active');
+      $(this).addClass('active');
+      _this.attr('data-date', $(this).find('a').attr('data-date'));
+    });
+
+    function updateTable(monthOffset) {
+      var date = strToDate(_this.find('.month').text());
+      date.setMonth(date.getMonth() + monthOffset);
+      _this.update(date);
+    };
+
+    _this.find('.next').click(function () {
+      updateTable(1);
+
+    });
+
+    _this.find('.prev').click(function () {
+      updateTable(-1);
+    });
+
+    return this;
+  };
+
+  $.fn.calendar.defaults = {
+    date: new Date(),
+  };
+
+  $.fn.datePicker = function () {
+    var _this = this;
+    var picker = $('<div></div>');
+    picker.addClass('picker-container');
+    picker.css('display', 'none');  /* default invisable */
+
+    picker.calendar({'date': strToDate(_this.val())});
+    _this.after(picker);
+
+    /* event binding */
+    // click outside area, make calendar disappear
+    $('body').click(function () {
+      picker.css('display', 'none');
+    });
+
+    // click input should make calendar appear
+    _this.click(function () {
+      picker.css('display', '');
+      return false; // stop sending event to docment
+    });
+
+    // click on calender, update input
+    picker.click(function () {
+      _this.val(picker.getCurrentDate());
+      return false;
+    });
+
+    return this;
+  };
+
+  $(window).load(function () {
+    $('.jquery-calendar').calendar();
+    $('.date-picker:text').datePicker();
+  });
+}($));
+
 function submitEntry(form) {
   var reqs = {
     'date': $(form).find('input[name="date"]').val(),
@@ -30,7 +327,7 @@ $(window).load(function () {
 {% block memo_body %}
 <div class="entry-form">
   {% csrf_token %}
-  <div class="entry-head"><input name="date" type="text" />
+  <div class="entry-head"><input name="date" class="date-picker" type="text" />
   <span class="entry-star"><input name="star" type="checkbox" /><a class="star-btn" href="#"><span class="fui-heart"></span></a></span></div>
   <div><textarea name="text" rows=20 placeholder="Write down your entry here."></textarea></div>
   <div><input name="submit" type="submit" value="Save" class="btn btn-large btn-success" /></div>
