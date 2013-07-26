@@ -82,7 +82,8 @@ class BaseTest(LiveServerTestCase):
         for name, value in form:
             element = self.browser.find_element_by_name(name)
             if isinstance(value, str):
-                element.clear()  # should clear existing text
+                if element.get_attribute('type') != 'file':  # file type is unclearable
+                    element.clear()  # should clear existing text
                 element.send_keys(value)
             elif value:  # bool value deter whether to click
                 element.click()
@@ -320,3 +321,28 @@ class MemoTest(BaseTest):
                 continue
             rel_value = self.get_input_value(name)
             assert rel_value == value, "%s: expect %s, while real %s" % (name, value, rel_value)
+
+    def test_io_page(self):
+        self.login()
+        url = self.reverse('memo.views.memo_io')
+        self.browser.get(url)  # open setting page
+
+        #### import test ####
+        hint = "entries imported"
+        # initial page should has not entries imported string
+        self.assert_body_contain(hint, False)
+
+        from os import path
+        fpath = path.join(path.abspath(path.dirname(__file__)), 'entrys.txt')
+        form = (
+            ('file', fpath),
+            ('import', True),
+        )
+        self.fill_form(form)
+
+        # chekc result, should say how many entries imported
+        self.assert_body_contain('3 ' + hint)
+
+        #### export test ####
+        form = (('export', True))
+        self.fill_form(form)
