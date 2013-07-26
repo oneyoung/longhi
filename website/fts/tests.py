@@ -344,5 +344,7 @@ class MemoTest(BaseTest):
         self.assert_body_contain('3 ' + hint)
 
         #### export test ####
-        form = (('export', True))
+        form = (
+            ('export', True),
+        )
         self.fill_form(form)
