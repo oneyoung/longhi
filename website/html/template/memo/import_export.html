@@ -1,1 +1,27 @@
 {% extends 'base.html' %}
+
+{% block body %}
+<div class="block-container">
+  <h2> Import </h2>
+  <div>
+    <p> Import your entries which import from this site or Ohlife.com.</p>
+    <form action="{% url 'memo.views.memo_io' %}" method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <input name="action" value="import" style="display:none" />
+      <input name="file" type="file" />
+      <input name="import" type="submit" value="Import" />
+    </form>
+  </div>
+</div>
+
+<div class="block-container">
+  <h2> Export </h2>
+  <div>
+    <form action="{% url 'memo.views.memo_io' %}" method="post">
+      {% csrf_token %}
+      <input name="action" value="export" style="display:none" />
+      <input name="export" type="submit" value="Export" />
+    </form>
+  </div>
+</div>
+{% endblock %}
