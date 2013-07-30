@@ -1,7 +1,39 @@
 {% extends 'base.html' %}
 
+{% block head %}
+<style>
+.block-container {
+  color: #ffffff;
+  padding: 30px;
+  text-align: left;
+}
+
+#import-block {
+  background-color: #3498db;
+}
+
+#export-block {
+  background-color: #2980b9;
+}
+
+</style>
+
+<script>
+  $(window).load(function () {
+    $('#import-block input[name="file"]').change(function () {
+      var submit = $('#import-block input[name="import"]');
+      if ($(this).val()) {
+        submit.attr('disabled', false);
+      } else {
+        submit.attr('disabled', true);
+      }
+    });
+  });
+</script>
+{% endblock %}
+
 {% block body %}
-<div class="block-container">
+<div class="block-container" id="import-block">
   <h2> Import </h2>
   {% if msg %}
   <p class="lead text-success"><span class="fui-check-inverted"></span> {{ msg }}</p>
@@ -11,19 +43,19 @@
     <form action="{% url 'memo.views.memo_io' %}" method="post" enctype="multipart/form-data">
       {% csrf_token %}
       <input name="action" value="import" style="display:none" />
-      <input name="file" type="file" />
-      <input name="import" type="submit" value="Import" />
+      <input name="file" type="file" class="btn"/> <br/>
+      <input name="import" type="submit" value="Import" class="btn btn-large btn-success" disabled />
     </form>
   </div>
 </div>
-<hr />
-<div class="block-container">
+<div class="block-container" id="export-block">
   <h2> Export </h2>
   <div>
+    <p> Export your entries into one file. </p>
     <form action="{% url 'memo.views.memo_io' %}" method="post">
       {% csrf_token %}
       <input name="action" value="export" style="display:none" />
-      <input name="export" type="submit" value="Export" />
+      <input name="export" type="submit" value="Export" class="btn btn-large btn-success" />
     </form>
   </div>
 </div>
