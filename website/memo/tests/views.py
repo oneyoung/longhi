@@ -230,6 +230,7 @@ class EntrysTest(TestCase):
         views2test = ['memo.views.memo_io',
                       'memo.views.memo_write',
                       'memo.views.memo_entry',
+                      'memo.views.memo_dashboard',
                       'memo.views.memo_setting', ]
         for view_name in views2test:
             test_view(view_name)
