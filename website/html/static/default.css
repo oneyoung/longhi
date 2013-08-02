@@ -12,21 +12,6 @@ body {
 	width: 960px;
 }
 
-/* nav bar */
-#header-nav {
-	background: green;
-}
-
-#header-nav .nav {
-	float: right;
-}
-
-#header-nav h1 {
-	margin-left: 10px;
-	float: left;
-	color: white;
-}
-
 .nickname {
 	color: #F1C40F;
 }

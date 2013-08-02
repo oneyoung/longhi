@@ -6,10 +6,10 @@
 
   <link href="{% static 'default.css' %}" rel="stylesheet">
   <!-- Loading Bootstrap & Flat-UI -->
-  <link href="{% static 'flatui/bootstrap/css/bootstrap.css' %}" rel="stylesheet">
-  <link href="{% static 'flatui/css/flat-ui.css' %}" rel="stylesheet">
+  <link href="{% static 'bs/css/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="{% static 'bs/css/bootstrap-glyphicons.css' %}" rel="stylesheet">
   <!-- load jquery first -->
-  <script src="{% static 'flatui/js/jquery-1.8.3.min.js' %}"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 
   {% block head %}{% endblock %}
 </head>
@@ -19,43 +19,33 @@
   <div id="header-nav">
     <!-- nav bar -->
     <div class="navbar navbar-inverse">
-      <div class="navbar navbar-inner">
-        <h1>MemoLife</h1>
-        <ul class="nav">
-          <li></li>
-        {% if request.user.is_authenticated %}
-          <li><a href="{% url 'memo.views.memo_entry' %}">Entry</a></li>
-          <li><a href="{% url 'memo.views.memo_write' %}">Write</a></li>
-          <li>
-            <a href="#"><span class="fui-user"><span class="nickname"> {{ request.user.setting.nickname }}</span></span></a>
-            <ul>
-              <li><a id="settings" href="{% url 'memo.views.memo_setting' %}">Settings</a></li>
-              <li><a id="logout" href="{% url 'memo.views.logout' %}">Logout</a></li>
-            </ul>
-          </li>
-        {% else %}
-          <li><a href="{% url 'memo.views.login' %}">Login</a></li>
-          <li><a href="{% url 'memo.views.register' %}">Register</a></li>
-        {% endif %}
-        </ul>
+      <a href="{% url 'memo.views.home' %}" class="navbar-brand"><span class="glyphicon glyphicon-home"></span> MemoLife</a>
+      <div class="pull-right btn-group">
+      {% if request.user.is_authenticated %}
+        <a href="{% url 'memo.views.memo_entry' %}" class="btn btn-default navbar-btn"><span class="glyphicon glyphicon-file"></span> Entry</a>
+        <a href="{% url 'memo.views.memo_write' %}" class="btn btn-default navbar-btn"><span class="glyphicon glyphicon-pencil"></span> Write</a>
+        <div class="btn-group">
+          <button type="button" class="btn btn-default navbar-btn dropdown-toggle" data-toggle="dropdown">
+            <span class="glyphicon glyphicon-user"></span> <span class="nickname"> {{ request.user.setting.nickname }}</span> <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu">
+            <li><a id="settings" href="{% url 'memo.views.memo_setting' %}"><span class="glyphicon glyphicon-cog"></span> Settings</a></li>
+            <li><a id="import-export" href="{% url 'memo.views.memo_io' %}"><span class="glyphicon glyphicon-upload"></span> Import | <span class="glyphicon glyphicon-download"></span> Export</a></li>
+            <li class="divider"></li>
+            <li><a id="logout" href="{% url 'memo.views.logout' %}"><span class="glyphicon glyphicon-off"></span> Logout</a></li>
+          </ul>
+        </div>
+      {% else %}
+        <a href="{% url 'memo.views.login' %}" class="btn btn-default navbar-btn">Login</a>
+        <a href="{% url 'memo.views.register' %} " class="btn btn-default navbar-btn">Register</a>
+      {% endif %}
       </div>
     </div>
   </div>
   <div id="content">{% block body %}{% endblock %}</div>
   <div id="footer">Footer</div>
 </div>
-    <!-- Load JS here for greater good -->
-  <!-- Flat-UI js -->
-  <script src="{% static 'flatui/js/jquery-ui-1.10.3.custom.min.js' %}"></script>
-  <script src="{% static 'flatui/js/jquery.ui.touch-punch.min.js' %}"></script>
-  <script src="{% static 'flatui/js/bootstrap.min.js' %}"></script>
-  <script src="{% static 'flatui/js/bootstrap-select.js' %}"></script>
-  <script src="{% static 'flatui/js/bootstrap-switch.js' %}"></script>
-  <script src="{% static 'flatui/js/flatui-checkbox.js' %}"></script>
-  <script src="{% static 'flatui/js/flatui-radio.js' %}"></script>
-  <script src="{% static 'flatui/js/jquery.tagsinput.js' %}"></script>
-  <script src="{% static 'flatui/js/jquery.placeholder.js' %}"></script>
-  <script src="{% static 'flatui/js/jquery.stacktable.js' %}"></script>
-  <script src="{% static 'flatui/js/application.js' %}"></script>
+  <!-- Load JS here for greater good -->
+  <script src="{% static 'bs/js/bootstrap.min.js' %}"></script>
 </body>
 </html>
