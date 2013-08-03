@@ -304,7 +304,9 @@ class EntrysTest(TestCase):
             if value:
                 params['value'] = value
             if text:
-                params['text'] = 'true'
+                params['payload'] = 'html,text'
+            else:
+                params['payload'] = 'html'
             url = base_url + '?%s' % urllib.urlencode(params)
             resp = client.get(url, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
             resp_json = json.loads(resp.content)

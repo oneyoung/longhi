@@ -139,7 +139,8 @@ class AjaxView(View):
                     year -> YYYY
                     month -> YYYY-MM
                     range -> YYYY-MM-DD_YYYY-MM-DD
-            text -- specified whether to fetch original text, default is 'false'
+            payload -- specidied whether content to return, can be 'text' 'html',
+                    support multiple content
 
         response:
             {
@@ -161,7 +162,7 @@ class AjaxView(View):
             mode = request.GET.get('mode')
             query = request.GET.get('query')
             value = request.GET.get('value')
-            text = request.GET.get('text', 'false') == 'true'
+            payload = request.GET.get('payload')
             queryset = request.user.entry_set
 
             def stuff_response(entrys):
@@ -169,9 +170,10 @@ class AjaxView(View):
                     d = {
                         'date': utils.date2str(entry.date),
                         'star': entry.star,
-                        'html': entry.html
                     }
-                    if text:
+                    if 'html' in payload:
+                        d['html'] = entry.html
+                    if 'text' in payload:
                         d['text'] = entry.text
                     return d
 
