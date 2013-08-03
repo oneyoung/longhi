@@ -74,6 +74,10 @@ body {
 	display: none;
 }
 
+.star-btn:hover {
+	text-decoration: none;
+}
+
 .entry-star .star-btn {
 	color: #95A5A6;
 	font-size: x-large;
