@@ -185,14 +185,19 @@ class EntrysTest(TestCase):
         # ** import test **
         filename = 'entry_import.txt'
         import_file = utils.get_file(filename)
-        # and then import file
-        with open(import_file) as fp:
-            client.post(url, {'action': 'import', 'file': fp})
-        # here we check the result
-        for date, text, star in str2entrys(utils.read_file(filename)):
-            entry = Entry.objects.get(user=user, date=date)
-            self.assertEquals(text, entry.text)
-            self.assertEqual(star, entry.star)
+
+        def do_import():
+            # and then import file
+            with open(import_file) as fp:
+                client.post(url, {'action': 'import', 'file': fp})
+            # here we check the result
+            for date, text, star in str2entrys(utils.read_file(filename)):
+                entry = Entry.objects.get(user=user, date=date)
+                self.assertEquals(text, entry.text)
+                self.assertEqual(star, entry.star)
+        # import two times to check if duplicate import
+        do_import()
+        do_import()
 
         # ** export test **
         resp = client.post(url, {'action': 'export'})

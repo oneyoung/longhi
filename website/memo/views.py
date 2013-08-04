@@ -109,7 +109,10 @@ class ImportExportView(BaseView):
             f = request.FILES.get('file')
             count = 0
             for date, text, star in utils.str2entrys(f.read()):
-                Entry(user=user, date=date, text=text, star=star).save()
+                entry, created = Entry.objects.get_or_create(user=user, date=date)
+                entry.text = text
+                entry.star = star
+                entry.save()
                 count += 1
             msg = "%d entries imported." % count if count else "No entry imported."
             return self.render_to_response({'msg': msg})
