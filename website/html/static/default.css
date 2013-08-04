@@ -114,6 +114,7 @@ body {
 
 .entry-form textarea {
 	width: 100%;
+	resize: vertical;
 }
 
 /* setting */

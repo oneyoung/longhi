@@ -327,9 +327,22 @@ $(window).load(function () {
 {% block memo_body %}
 <div class="entry-form">
   {% csrf_token %}
-  <div class="entry-head"><input name="date" class="date-picker" type="text" />
-  <span class="entry-star"><input name="star" type="checkbox" /><a class="star-btn" href="javascript:void(0);"><span class="glyphicon glyphicon-heart"></span></a></span></div>
-  <div><textarea name="text" rows=20 placeholder="Write down your entry here."></textarea></div>
-  <div><input name="submit" type="submit" value="Save" class="btn btn-large btn-success" /></div>
+  <div class="entry-head row">
+    <div class="input-group col-3">
+      <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+      <input name="date" class="date-picker form-control" type="text" maxlength="12"/>
+    </div>
+    <div class="entry-star input-group col-1">
+      <input name="star" type="checkbox" /><a class="star-btn" href="javascript:void(0);"><span class="glyphicon glyphicon-heart"></span></a>
+    </div>
+  </div>
+  <div class="row">
+    <div class="input-group col-12">
+      <textarea name="text" class="form-control" rows=20 placeholder="Write down your entry here."></textarea>
+    </div>
+  </div>
+  <div>
+    <input name="submit" type="submit" value="Save" class="btn btn-large btn-success" />
+  </div>
 </div>
 {% endblock %}
