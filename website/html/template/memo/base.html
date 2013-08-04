@@ -54,13 +54,15 @@ function memoQuery(mode, query, value, payload) {
     'mode': mode,
     'query': query,
   };
+
   if (value) {
     reqs['value'] = value;
   }
-  if (payload) {
-    reqs['payload'] = payload;
-  } else {
+
+  if (typeof(payload) == 'undefined') {
     reqs['payload'] = 'html';
+  } else {
+    reqs['payload'] = payload;
   }
 
   var entrys = null;

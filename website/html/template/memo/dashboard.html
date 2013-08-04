@@ -7,11 +7,20 @@
   stroke: #ccc;
 }
 
+.day[data-state="entry"] {
+  fill: #f0f;
+}
+
+.day[data-state="entry-star"] {
+  fill: #f00;
+}
+
 .month {
   fill: none;
   stroke: #000;
   stroke-width: 2px;
 }
+
 </style>
 
 <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
@@ -22,10 +31,18 @@ function dashboard(s, selector) {
       height = 136,
       cellSize = 17; // cell size
 
-  var startDate = s;
+  var startDate = prevYear(s);
 
   var day = d3.time.format("%w"),
-      format = d3.time.format("%Y-%-m-%-d");
+      format = d3.time.format("%Y-%m-%d");
+
+  function nextYear(s) {
+      return new Date(s.getFullYear() + 1, s.getMonth(), s.getDate());
+  };
+
+  function prevYear(s) {
+      return new Date(s.getFullYear() - 1, s.getMonth(), s.getDate());
+  };
 
   function week(d) {
       var weekOfYear = d3.time.format("%U");
@@ -43,10 +60,6 @@ function dashboard(s, selector) {
         }
       }
   }
-
-  function nextYear(s) {
-      return new Date(s.getFullYear() + 1, s.getMonth(), s.getDate());
-  };
 
   var svg = d3.select(selector).selectAll("svg")
       .data([startDate])
@@ -74,6 +87,17 @@ function dashboard(s, selector) {
 
   rect.append("title")
       .text(function(d) { return d; });
+
+  var range = format(startDate) + '_' + format(nextYear(startDate));
+  var entrys = d3.nest()
+    .key(function (e) { return e.date; })
+    .rollup(function (e) { return e[0] })
+    .map(memoQuery('batch', 'range', range, 'none'));
+
+  var state = function (e) { console.info(e); return "entry" + (e.star? '-star': ''); };
+
+  rect.filter(function (d) { return entrys[d]; })
+    .attr("data-state", function (d) { return state(entrys[d]); });
 
 /*
   svg.selectAll(".month")
