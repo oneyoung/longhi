@@ -73,20 +73,22 @@ function dashboard(s, selector) {
   svg.append("text")
       .attr("transform", "translate(-6," + cellSize * 3.5 + ")rotate(-90)")
       .style("text-anchor", "middle")
-      .text(function(d) { return d; });
+      .text(function (d) { return d; });
 
   var rect = svg.selectAll(".day")
-      .data(function(d) { return d3.time.days(d, nextYear(d)); })
+      .data(function (d) { return d3.time.days(d, nextYear(d)); })
     .enter().append("rect")
       .attr("class", "day")
       .attr("width", cellSize)
       .attr("height", cellSize)
-      .attr("x", function(d) { return week(d) * cellSize; })
-      .attr("y", function(d) { return day(d) * cellSize; })
+      .attr("data-hover", function (d) { return "No entry on " + format(d); })
+      .attr("x", function (d) { return week(d) * cellSize; })
+      .attr("y", function (d) { return day(d) * cellSize; })
+      .on('click', clickHanlder)
       .datum(format);
 
   rect.append("title")
-      .text(function(d) { return d; });
+      .text(function (d) { return d; });
 
   var range = format(startDate) + '_' + format(nextYear(startDate));
   var entrys = d3.nest()
@@ -94,14 +96,26 @@ function dashboard(s, selector) {
     .rollup(function (e) { return e[0] })
     .map(memoQuery('batch', 'range', range, 'none'));
 
-  var state = function (e) { console.info(e); return "entry" + (e.star? '-star': ''); };
+  var state = function (e) { return "entry" + (e.star? '-star': ''); };
 
   rect.filter(function (d) { return entrys[d]; })
-    .attr("data-state", function (d) { return state(entrys[d]); });
+    .attr("data-state", function (d) { return state(entrys[d]); })
+    .attr('data-hover', function (d) { return "Entry on " + format[d]; });
+
+  function clickHanlder() {
+    var d = $(this).find('title').text();
+    if ($(this).attr('data-state')) {  /* a valid entry */
+      var result = memoQuery('single', 'date', d);
+      $('#entry-pad').empty()
+        .append(entryFactory(result[0]));
+    } else {
+
+    }
+  }
 
 /*
   svg.selectAll(".month")
-      .data(function(d) { return d3.time.months(d, nextYear(d)); })
+      .data(function (d) { return d3.time.months(d, nextYear(d)); })
     .enter().append("path")
       .attr("class", "month")
       .attr("d", monthPath);
@@ -129,5 +143,7 @@ $(window).load(function () {
 
 {% block memo_body %}
   <div id="dashboard">
+  </div>
+  <div id="entry-pad">
   </div>
 {% endblock %}
