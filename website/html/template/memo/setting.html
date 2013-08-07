@@ -4,7 +4,20 @@
 <script type="text/javascript">
 function notify_trigger(input) {
   var enable = $('.setting-form input[name="notify"]').prop('checked') ? true: false;
-  $('.setting-form .notify-subgroup').attr('disabled', !enable);
+  if (/msie/.test(navigator.userAgent.toLowerCase())) {
+    /* IE < 10 not support fieldset disabled */
+    $('.setting-form .notify-subgroup :input').each(function () {
+      $(this).prop('disabled', !enable);
+    });
+  } else {
+    $('.setting-form .notify-subgroup').prop('disabled', !enable);
+  }
+}
+
+$(window).load(function () {
+  notify_trigger();
+  $('.setting-form input[name="notify"]').change(function () {
+    notify_trigger();
   });
 
   $('.setting-form').submit(function () {
@@ -14,13 +27,7 @@ function notify_trigger(input) {
     });
     return true;
   });
-}
 
-$(window).load(function () {
-  notify_trigger();
-  $('.setting-form input[name="notify"]').change(function () {
-    notify_trigger();
-  });
 });
 </script>
 {% endblock %}
