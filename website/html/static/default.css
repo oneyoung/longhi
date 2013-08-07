@@ -122,19 +122,9 @@ body {
 
 /* setting */
 .setting-form {
-	display: table;
 	margin-left: auto;
 	margin-right: auto;
 	padding: 40px;
 	background-color: white;
 	width: 80%;
-}
-
-.setting-form .control-group {
-	display: table-row;
-}
-
-.setting-form label {
-	display: inline;
-	font-size: large;
 }

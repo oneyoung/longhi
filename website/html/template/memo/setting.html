@@ -3,14 +3,10 @@
 {% block head %}
 <script type="text/javascript">
 function notify_trigger(input) {
-  var enable = $('.setting-form input[name="notify"]').attr('checked') ? true: false;
-  $('.setting-form .notify-subgroup :input').each(function () {
-    if (enable) {
-      $(this).removeAttr('disabled');
-    } else {
-      $(this).attr('disabled', true);
-    }
+  var enable = $('.setting-form input[name="notify"]').prop('checked') ? true: false;
+  $('.setting-form .notify-subgroup').attr('disabled', !enable);
   });
+
   $('.setting-form').submit(function () {
     /* post disabled elemments too */
     $(this).find(':disabled').each(function () {
@@ -33,48 +29,53 @@ $(window).load(function () {
 <form class="setting-form" method="post" action="{% url 'memo.views.memo_setting' %}">
   {% csrf_token %}
   {% if success %}
-  <div><p>Setting Save Successfully.</p></div>
+  <div class="alert alert-success">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    <strong>Success!</strong> Your setting has been saved.
+  </div>
   {% endif %}
-  <div class="control-group">
-    <input name="nickname" type="text" value="{{ form.nickname.value }}"/>
-    <label>Nickname</label>
-  </div>
-  <div class="control-group">
-    <input name="markdown" type="checkbox" data-toggle="switch" {% if form.markdown.value %}checked{% endif %} />
-    <label>Markdown</label>
-  </div>
-    <div class="control-group">
-      <input name="notify" type="checkbox" data-toggle="switch" {% if form.notify.value %}checked{% endif %} />
-      <label>Email Nofity</label>
+  <fieldset>
+    <div class="form-group">
+      <label>Nickname</label>
+      <input name="nickname" type="text" class="form-control" placeholder="Your nickname" value="{{ form.nickname.value }}"/>
     </div>
-  <div class="notify-subgroup">
-    <div class="control-group">
-      <select name="timezone" value="{{ form.timezone.value }}" class="select-block select-herolist">
-      {% for value, name in form.instance.TIME_ZONE_CHOICES %}
-        <option value="{{ value }}" {% if form.timezone.value == value %}selected="selected"{% endif %}>{{ name }}</option>
-      {% endfor %}
-      </select>
-      <label>Time Zone</label>
+    <div class="checkbox">
+      <label for="id-markdown">Enable Markdown syntax support.</label>
+      <input name="markdown" id="id-markdown" type="checkbox" {% if form.markdown.value %}checked{% endif %} />
     </div>
-    <div class="control-group">
-      <!-- we prefer js here -->
-      <input name="preferhour" type="text" value="{{ form.preferhour.value }}" />
-      <label>Prefer Time</label>
-    </div>
-    <div class="control-group">
-      <select name="interval" value="{{ form.interval.value }}" class="select-block select-herolist">
-      {% for value, hint in form.instance.INTERVAL_CHOICES %}
-        <option value="{{ value }}" {% if form.interval.value|add:0 == value %}selected="selected"{% endif %}>{{ hint }}</option>
-      {% endfor %}
-      </select>
-      <label>Interval</label>
-    </div>
-    <div class="control-group">
-      <input name="attach" type="checkbox" data-toggle="switch" {% if form.attach.value %}checked{% endif %} />
-      <label>Attach an Entry</label>
-    </div>
+      <div class="checkbox">
+        <label for="id-notify">Email Notification.</label>
+        <input name="notify" id="id-notify" type="checkbox" {% if form.notify.value %}checked{% endif %} />
+      </div>
+    <fieldset class="notify-subgroup">
+      <div class="form-group">
+        <label>Time Zone</label>
+        <select name="timezone" value="{{ form.timezone.value }}" class="form-control">
+        {% for value, name in form.instance.TIME_ZONE_CHOICES %}
+          <option value="{{ value }}" {% if form.timezone.value == value %}selected="selected"{% endif %}>{{ name }}</option>
+        {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <!-- we prefer js here -->
+        <label>Prefer Time</label>
+        <input name="preferhour" type="text" class="form-control" value="{{ form.preferhour.value }}" />
+      </div>
+      <div class="form-group">
+        <label>Interval</label>
+        <select name="interval" value="{{ form.interval.value }}" class="form-control">
+        {% for value, hint in form.instance.INTERVAL_CHOICES %}
+          <option value="{{ value }}" {% if form.interval.value|add:0 == value %}selected="selected"{% endif %}>{{ hint }}</option>
+        {% endfor %}
+        </select>
+      </div>
+      <div class="checkbox">
+        <label for="id-attach">Attach an Entry</label>
+        <input name="attach" id="id-attach" type="checkbox" {% if form.attach.value %}checked{% endif %} />
+      </div>
+    </fieldset>
 
-  </div>
-  <input name="submit" type="submit" value="Save!" class="btn btn-large btn-block btn-success" />
+    <input name="submit" type="submit" value="Save!" class="btn btn-large btn-block btn-success" />
+  </fieldset>
 </form>
 {% endblock %}
