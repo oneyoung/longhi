@@ -1,23 +1,6 @@
 {% extends 'base.html' %}
 
 {% block head %}
-<style>
-.block-container {
-  color: #ffffff;
-  padding: 30px;
-  text-align: left;
-}
-
-#import-block {
-  background-color: #3498db;
-}
-
-#export-block {
-  background-color: #2980b9;
-}
-
-</style>
-
 <script>
   $(window).load(function () {
     $('#import-block input[name="file"]').change(function () {
@@ -33,29 +16,41 @@
 {% endblock %}
 
 {% block body %}
-<div class="block-container" id="import-block">
-  <h2> Import </h2>
+<div class="panel panel-primary" id="import-block">
+  <div class="panel-heading"><strong>Import</strong></div>
   {% if msg %}
-  <p class="lead text-success"><span class="fui-check-inverted"></span> {{ msg }}</p>
+  <div class="alert alert-success">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    <strong>Success!</strong> {{ msg }}
+  </div>
   {% endif %}
   <div>
-    <p> Import your entries which import from this site or Ohlife.com.</p>
+    <legend>Import your entries from files.</legend>
     <form action="{% url 'memo.views.memo_io' %}" method="post" enctype="multipart/form-data">
       {% csrf_token %}
       <input name="action" value="import" style="display:none" />
-      <input name="file" type="file" class="btn"/> <br/>
-      <input name="import" type="submit" value="Import" class="btn btn-large btn-success" disabled />
+      <fieldset>
+        <div class="form-group">
+          <label>File input</label>
+          <input name="file" type="file" />
+          <p class="help-block">Choose file to import here.</p>
+        </div>
+        <div class="form-group">
+          <input name="import" type="submit" value="Import" class="btn btn-success" disabled />
+        </div>
+      </fieldset>
     </form>
   </div>
 </div>
-<div class="block-container" id="export-block">
-  <h2> Export </h2>
+
+<div class="panel panel-primary" id="export-block">
+  <div class="panel-heading"><strong>Export</strong></div>
   <div>
-    <p> Export your entries into one file. </p>
+    <legend> Export your entries into one file. </legend>
     <form action="{% url 'memo.views.memo_io' %}" method="post">
       {% csrf_token %}
       <input name="action" value="export" style="display:none" />
-      <input name="export" type="submit" value="Export" class="btn btn-large btn-success" />
+      <input name="export" type="submit" value="Export" class="btn btn-success" />
     </form>
   </div>
 </div>

@@ -19,7 +19,6 @@ body {
 #content {
 	background: #BDC3C7;
 	margin: auto;
-	text-align: center;
 }
 
 #footer {
@@ -47,6 +46,7 @@ body {
 #btn-toolbar {
 	margin-top: 40px;
 	margin-bottom: 0;
+	text-align: center;
 }
 
 #entry-pad {
@@ -68,6 +68,11 @@ body {
 .entry-date {
 	color: #C0392B;
 	border: none;
+	text-align: center;
+}
+
+.entry-star {
+	text-align: center;
 }
 
 .entry-star input {
@@ -91,7 +96,6 @@ body {
 	font-size: 1.75em;
 	line-height: 1.5em;
 	margin-top: 20px;
-	text-align: left;
 }
 
 .entry-html p {
@@ -105,7 +109,6 @@ body {
 }
 
 .entry-form .entry-head {
-	text-align: left;
 }
 
 .entry-form .entry-star {
@@ -119,20 +122,9 @@ body {
 
 /* setting */
 .setting-form {
-	display: table;
-	text-align: left;
 	margin-left: auto;
 	margin-right: auto;
 	padding: 40px;
 	background-color: white;
 	width: 80%;
-}
-
-.setting-form .control-group {
-	display: table-row;
-}
-
-.setting-form label {
-	display: inline;
-	font-size: large;
 }
